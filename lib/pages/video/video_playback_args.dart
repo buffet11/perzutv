@@ -50,10 +50,15 @@ class OfflineVideoPlaybackArgs extends VideoPlaybackArgs {
 
 /// 影视播放参数（来自苹果CMS 采集源）。
 ///
-/// 与在线番剧的关键区别：**播放地址是现成的直链，不需要 WebView 去解析**。
+/// 与在线番剧的关键区别：**地址通常已经是现成的直链，不需要 WebView**。
 /// 番剧要给插件一个网页地址、让规则把真实视频流从页面里挖出来；苹果CMS 的
-/// `vod_play_url` 本身就是 m3u8/mp4 直链，拿到即可播。所以影视走一条完全独立
+/// `xxxm3u8` 线路本身就是 m3u8/mp4 直链，拿到即可播。所以影视走一条完全独立
 /// 的换集路径（`_changeMovieEpisode`），不碰 WebView。
+///
+/// 但**并非总是直链** —— 采集站的 `xxx云` 线路给的是网页播放页。那些集也允许
+/// 出现在这里，由 `_changeMovieEpisode` 在换集时调 `StreamResolver` 换成直链。
+/// 放在播放页做而不是进页面前批量做，是因为一季几十集、批量解析要等好几分钟，
+/// 而用户一次只看一集。
 class MovieVideoPlaybackArgs extends VideoPlaybackArgs {
   const MovieVideoPlaybackArgs({
     required this.sourceKey,
@@ -84,12 +89,14 @@ class MovieVideoPlaybackArgs extends VideoPlaybackArgs {
   /// 线路名（源站的 `vod_play_from`）
   final String routeName;
 
-  /// 这条线路**可播**的剧集，保持源站顺序。电影通常只有一集。
+  /// 这条线路里**值得展示的**剧集，保持源站顺序。电影通常只有一集。
   ///
-  /// 调用方必须先把不可播的集滤掉（`MovieEpisode.playable`）。原因：这里会被
-  /// 构造成 [Road] 交给播放页，而播放页的「自动连播」是按 Road 的长度往下走的
-  /// —— 混进不可播的集（源站给的是网页中转地址），连播就会跳到一个 HTML 页面上
-  /// 必然报错。展示「不可播的集」是详情页选集列表的职责，不是播放页的。
+  /// 调用方传 `MovieEpisode.actionable` 的那些：直链的、以及网页播放页
+  /// （可以解析成直链的）。两种都能在播放页播出来，所以都能进 [Road]。
+  ///
+  /// 完全没办法的集（比如相对路径）不要传 —— 它们既播不了也解析不了，
+  /// 放进来只会让「自动连播」走到必然失败的集上。
+  /// 展示全部集（含播不了的）是详情页选集列表的职责。
   final List<MovieEpisode> episodes;
 
   /// 从第几集开始播（**0 基下标**）

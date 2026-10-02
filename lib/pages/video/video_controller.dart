@@ -10,6 +10,7 @@ import 'package:kazutv/modules/download/download_module.dart';
 import 'package:kazutv/modules/history/history_module.dart';
 import 'package:kazutv/modules/movie/movie_history.dart';
 import 'package:kazutv/services/movie/movie_history_service.dart';
+import 'package:kazutv/services/movie/stream_resolver.dart';
 import 'package:kazutv/repositories/download_repository.dart';
 import 'package:kazutv/services/download/download_manager.dart';
 import 'package:kazutv/services/video_source/services.dart';
@@ -712,6 +713,39 @@ abstract class _VideoPageController with Store implements Disposable {
       return;
     }
 
+    // 源站给的可能是「网页播放页」而不是直链（采集站的 `xxx云` 线路就是）。
+    // 那种地址交给播放器只会显示一页 HTML，所以在这里换成真直链。
+    //
+    // 放在**这一步**（换集时）而不是进播放页之前批量解析：一季几十集，
+    // 批量解析要发几十个请求、等上好几分钟；而用户一集一集看，
+    // 每次只需要解析当前这一集。自动连播也走这里，所以是无感的。
+    //
+    // 解析期间 `_loading` 还是 true（由 changeEpisode 的 _beginEpisodeSwitch
+    // 设的），界面正好显示加载中；解析不出来就 _failLoading，界面会给出
+    // 错误提示和重试按钮，而不是让播放器对着一个网页地址报错。
+    var playUrl = resolvedEpisode.pageUrl;
+    var httpHeaders = <String, String>{};
+
+    if (!StreamResolver.isDirectUrl(playUrl)) {
+      final resolved = await StreamResolver.resolve(playUrl);
+      if (session.isStale) {
+        return;
+      }
+      if (resolved == null) {
+        KazumiLogger().e(
+            'VideoPageController: 无法解析影视地址 $playUrl');
+        _failLoading(
+          '这一集的地址解析不出来。源站给的是一个网页地址，'
+          '没能从里面找到播放链接 —— 换一条线路，或换一个源试试。',
+        );
+        return;
+      }
+      KazumiLogger().i(
+          'VideoPageController: 影视地址已解析（${resolved.via}）-> ${resolved.url}');
+      playUrl = resolved.url;
+      httpHeaders = resolved.headers;
+    }
+
     // 影视不写历史：不设 _playbackHistoryIdentity，播放器侧就不会落盘。
     _applyResolvedSelection(resolvedEpisode);
     if (session.isStale) {
@@ -723,8 +757,7 @@ abstract class _VideoPageController with Store implements Disposable {
         'VideoPageController: movie episode changed to ${resolvedEpisode.displayTitle}');
 
     final params = PlaybackInitParams(
-      // 直链，直接交给播放器 —— 这是与番剧在线最大的不同
-      videoUrl: resolvedEpisode.pageUrl,
+      videoUrl: playUrl,
       offset: offset,
       isLocalPlayback: false,
       bangumiId: bangumiItem.id,
@@ -733,12 +766,13 @@ abstract class _VideoPageController with Store implements Disposable {
       pluginName: '',
       episode: resolvedEpisode.listIndex,
       danmakuEpisodeNumber: resolvedEpisode.danmakuEpisodeNumber,
-      pageUrl: resolvedEpisode.pageUrl,
+      pageUrl: playUrl,
       sortNumber: resolvedEpisode.sortNumber,
-      httpHeaders: const {},
+      // 解析出来的地址常按 Referer 做防盗链，必须把它带上
+      httpHeaders: httpHeaders,
       adBlockerEnabled: false,
       episodeTitle: resolvedEpisode.displayTitle,
-      referer: '',
+      referer: resolvedEpisode.pageUrl,
       currentRoad: resolvedEpisode.roadIndex,
       coverUrl: args.coverUrl.isEmpty ? null : args.coverUrl,
       bangumiName: args.movieName,

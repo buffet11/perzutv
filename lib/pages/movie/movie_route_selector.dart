@@ -3,9 +3,14 @@ import 'package:kazutv/modules/movie/movie_detail.dart';
 
 /// 线路选择器。
 ///
-/// 传入的 [routes] 应当已经按可播性排序（`MovieDetail.playableRoutes`），
-/// 所以第一个就是默认该选的那条。顺序不能按源站给的来 —— 实测电影天堂的
-/// 「流浪地球2」第一条线路是网页分享页，交给播放器只会黑屏。
+/// 传入的 [routes] 应当已经排好序（`MovieDetail.availableRoutes`），
+/// 第一个就是默认该选的那条。顺序不能按源站给的来 —— 实测电影天堂的
+/// 「流浪地球2」第一条线路是网页播放页，交给播放器只会黑屏。
+///
+/// 两种线路都会出现在这里：
+///   - **直链线路**（`xxxm3u8`）：点了直接播。
+///   - **网页线路**（`xxx云`，地址是播放页）：也能播 —— 播放页会先解析出
+///     真直链。测下来每个采集源都有这么一条，不该因为「不是直链」就藏起来。
 class MovieRouteSelector extends StatelessWidget {
   const MovieRouteSelector({
     super.key,
@@ -40,10 +45,21 @@ class MovieRouteSelector extends StatelessWidget {
     final route = routes[index];
     final selected = index == selectedIndex;
 
-    // 不可播的线路仍然展示（用户可能想看它有哪些集），但要一眼看出区别
-    final foreground = route.playable
+    // 完全不能用的线路（只在异常情况下出现）保持不可用的样式，
+    // 免得点进去才发现播不了。
+    final usable = route.actionable;
+    final foreground = usable
         ? (selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant)
         : colorScheme.outline;
+
+    final String subtitle;
+    if (route.playable) {
+      subtitle = '${route.episodes.length} 集';
+    } else if (usable) {
+      subtitle = '网页线路 · 需解析';
+    } else {
+      subtitle = '来源页 · 不可播';
+    }
 
     return Center(
       child: InkWell(
@@ -56,9 +72,8 @@ class MovieRouteSelector extends StatelessWidget {
                 ? colorScheme.primary
                 : colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(12),
-            border: route.playable
-                ? null
-                : Border.all(color: colorScheme.outlineVariant),
+            border:
+                usable ? null : Border.all(color: colorScheme.outlineVariant),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -68,17 +83,14 @@ class MovieRouteSelector extends StatelessWidget {
                 route.name,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: route.playable
+                  color: usable
                       ? (selected ? colorScheme.onPrimary : null)
                       : colorScheme.outline,
-                  decoration:
-                      route.playable ? null : TextDecoration.lineThrough,
+                  decoration: usable ? null : TextDecoration.lineThrough,
                 ),
               ),
               Text(
-                route.playable
-                    ? '${route.episodes.length} 集'
-                    : '来源页 · 不可播',
+                subtitle,
                 style: theme.textTheme.labelSmall?.copyWith(color: foreground),
               ),
             ],

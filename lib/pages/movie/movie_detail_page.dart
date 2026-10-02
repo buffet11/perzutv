@@ -17,6 +17,7 @@ import 'package:kazutv/pages/video/video_playback_args.dart';
 import 'package:kazutv/request/apis/apple_cms_api.dart';
 import 'package:kazutv/services/movie/movie_history_service.dart';
 import 'package:kazutv/services/movie/movie_source_manager.dart';
+import 'package:kazutv/services/movie/stream_resolver.dart';
 
 /// 影视详情页。
 ///
@@ -37,7 +38,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
   bool _loading = true;
   String? _error;
 
-  /// 当前选中的线路（在 `playableRoutes` 里的下标）
+  /// 当前选中的线路（在 `_routes` 里的下标）
   int _routeIndex = 0;
 
   /// 播放进度**每次读实时数据**而不是缓存一份。
@@ -116,7 +117,12 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
     }
   }
 
-  List<MovieRoute> get _routes => _detail?.playableRoutes ?? const [];
+  /// 展示的线路。
+  ///
+  /// 用 `availableRoutes` 而不是 `playableRoutes`：后者只算**直链**线路，
+  /// 而实测每个采集源都有一条「网页播放页」线路（`dytt` / `gsyun` …），
+  /// 那些现在能靠网页解析换成直链 —— 不列出来等于白扔一半的线路。
+  List<MovieRoute> get _routes => _detail?.availableRoutes ?? const [];
 
   MovieRoute? get _currentRoute {
     final routes = _routes;
@@ -137,15 +143,29 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
     if (routes.isEmpty) return null;
 
     var routeIndex = routes.indexWhere((r) => r.name == progress.routeName);
-    if (routeIndex < 0) routeIndex = 0; // 线路名对不上就退回第一条可播线路
+    if (routeIndex < 0) routeIndex = 0; // 线路名对不上就退回第一条可用线路
     final route = routes[routeIndex];
 
-    final playable = [for (final e in route.episodes) if (e.playable) e];
+    final list = _playableOf(route);
     final index = progress.episodeIndex;
-    if (index < 0 || index >= playable.length) return null;
+    if (index < 0 || index >= list.length) return null;
+
+    // 下标还得指向**同一集**。这里必须查一次：线路的可播集组成会变
+    // （源站加了新集、或者我们把「可解析」的集也算进来之后列表变长了），
+    // 光看下标的范围可能落在别的集上，硬套上去就是「接着看」看错集。
+    if (progress.episodeTitle.isNotEmpty &&
+        list[index].title != progress.episodeTitle) {
+      return null;
+    }
 
     return (route: route, routeIndex: routeIndex, episodeIndex: index);
   }
+
+  /// 这条线路里会进播放页的集（直链 + 可解析）。
+  ///
+  /// 与 [_play] 用的是同一个口径 —— 两处不一致的话，续播的下标就会错位。
+  static List<MovieEpisode> _playableOf(MovieRoute route) =>
+      [for (final e in route.episodes) if (e.actionable) e];
 
   /// 从上次的位置接着看。
   void _resume() {
@@ -154,50 +174,58 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
     if (target == null || progress == null) return;
 
     setState(() => _routeIndex = target.routeIndex);
-    final playable = [
-      for (final e in target.route.episodes)
-        if (e.playable) e,
-    ];
-    _play(playable[target.episodeIndex],
+    final list = _playableOf(target.route);
+    _play(list[target.episodeIndex],
         offsetSeconds: progress.positionSeconds);
   }
 
   /// 播放某一集。
   ///
-  /// 把这条线路**可播的剧集**一起带过去：播放页要用它构造 Road（换集、自动
+  /// 把这条线路**能播的剧集**一起带过去：播放页要用它构造 Road（换集、自动
   /// 连播、选集高亮都在那边做），只传一个 URL 的话换集就没有依据了。
   ///
-  /// 为什么滤掉不可播的集：它们只是源站给的网页中转地址（如电影天堂的
-  /// `/share/xxx`），播放器打不开。详情页的选集列表已经把它们显示为禁用，
-  /// 那是给用户看的；但**不能塞进播放页** —— 否则自动连播会跳到上面，
-  /// 播放器拿到一个 HTML 地址必然报错。播放页的选集列表只列能播的。
+  /// 「能播的」= 直链 + 网页播放页（可解析）。网页播放页那种不在这里解析，
+  /// 而是交给播放页在换集时解析（见 `_changeMovieEpisode`）—— 一季几十集，
+  /// 进播放页前批量解析要等好几分钟，而用户一次只看一集。
+  /// 两处口径必须一致，否则续播下标会错位，所以统一走 [_playableOf]。
+  ///
   /// [offsetSeconds] > 0 表示续播（从上次的位置接着看）。
   void _play(MovieEpisode episode, {int offsetSeconds = 0}) {
     final route = _currentRoute;
     final detail = _detail;
     if (route == null || detail == null) return;
 
-    if (!episode.playable) {
+    if (!episode.actionable) {
       KazumiDialog.showToast(
-        message: '这一集是网页中转地址，播放器打不开，换一条线路试试。',
+        message: '这一集的地址源站没给全（不是完整网址），播不了。换一条线路试试。',
         context: context,
       );
       return;
     }
 
-    final playable = [
-      for (final e in route.episodes)
-        if (e.playable) e,
-    ];
-    if (playable.isEmpty) {
+    // 平台播放页（腾讯/爱奇艺/优酷）没法靠网页解析拿地址，必须有解析源。
+    // 提前说清楚，免得用户进了播放页只看到一句「解析不出来」。
+    if (!episode.playable &&
+        StreamResolver.isPlatformPage(episode.url) &&
+        !StreamResolver.canResolve(episode.url)) {
       KazumiDialog.showToast(
-        message: '这条线路没有可直接播放的剧集，换一条试试。',
+        message: '这一集来自视频平台的播放页，需要在「设置 → 资源 → 解析源」里'
+            '配置一个解析接口才能播。',
         context: context,
       );
       return;
     }
 
-    final index = playable.indexOf(episode);
+    final list = _playableOf(route);
+    if (list.isEmpty) {
+      KazumiDialog.showToast(
+        message: '这条线路没有能播的剧集，换一条试试。',
+        context: context,
+      );
+      return;
+    }
+
+    final index = list.indexOf(episode);
     context.pushNamed(
       '/video/',
       arguments: MovieVideoPlaybackArgs(
@@ -206,7 +234,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
         movieName: detail.name,
         sourceName: widget.item.sourceName,
         routeName: route.name,
-        episodes: playable,
+        episodes: list,
         startIndex: index < 0 ? 0 : index,
         coverUrl: detail.pic.isNotEmpty ? detail.pic : widget.item.pic,
         year: detail.year,
@@ -328,10 +356,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
                 FilledButton.icon(
                   onPressed: () {
                     final route = _currentRoute;
-                    final episode = route?.firstPlayable;
+                    final episode = route?.firstActionable;
                     if (episode == null) {
                       KazumiDialog.showToast(
-                        message: '这条线路没有可播的剧集，换一条试试。',
+                        message: '这条线路没有能播的剧集，换一条试试。',
                         context: context,
                       );
                       return;
@@ -365,14 +393,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
     final progress = _progress!;
     final target = _resumeTarget!;
 
-    final playable = [
-      for (final e in target.route.episodes)
-        if (e.playable) e,
-    ];
+    final list = _playableOf(target.route);
     // 只有一集（电影）就别报「第 1 集」，用集名更自然
     final episodeLabel = progress.episodeTitle.isNotEmpty
         ? '${progress.episodeTitle} · '
-        : (playable.length > 1 ? '第 ${target.episodeIndex + 1} 集 · ' : '');
+        : (list.length > 1 ? '第 ${target.episodeIndex + 1} 集 · ' : '');
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -501,7 +526,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            '这个源给的所有线路都是网页中转地址，播放器打不开。'
+            '这个源给的地址都不完整（不是完整网址），一条都拼不出来。'
             '回上一页换一个源试试。',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onErrorContainer,
@@ -525,7 +550,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
               ),
               const SizedBox(width: 8),
               Text(
-                '共 ${detail.routes.length} 条，${routes.length} 条可播',
+                '共 ${detail.routes.length} 条，${routes.length} 条可用',
                 style: theme.textTheme.labelSmall
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
@@ -559,6 +584,16 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
                 theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
         ),
+        if (route.resolvableCount > 0)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Text(
+              '其中 ${route.resolvableCount} 集来自网页播放页，'
+              '播放前会先解析出真实地址（可能要等几秒）。',
+              style: theme.textTheme.labelSmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: MovieEpisodeGrid(

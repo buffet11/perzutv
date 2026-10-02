@@ -40,6 +40,9 @@ class GStorage {
   /// 混进去会污染番剧的「看过」列表和同步数据。
   static late Box<String> movieHistories;
 
+  /// 解析源列表（同样是 JSON 数组，理由见 movieSources）
+  static late Box<String> parseSources;
+
   /// Hive directory path, initialized during init()
   static String? _hivePath;
 
@@ -173,6 +176,7 @@ class GStorage {
     downloads = await _openBoxSafe<DownloadRecord>('downloads');
     movieSources = await _openBoxSafe<String>('movieSources');
     movieHistories = await _openBoxSafe<String>('movieHistories');
+    parseSources = await _openBoxSafe<String>('parseSources');
   }
 
   /// Open a Hive box with automatic recovery on corruption.

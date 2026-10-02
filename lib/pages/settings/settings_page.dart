@@ -69,6 +69,12 @@ const List<_SettingsGroup> _settingsGroups = [
         path: '/settings/movie-source',
       ),
       _SettingsCategory(
+        label: '解析源',
+        description: '平台播放页的解析接口（自行填写）',
+        icon: Icons.link_rounded,
+        path: '/settings/parse-source',
+      ),
+      _SettingsCategory(
         label: '下载设置',
         description: '并发数与弹幕缓存',
         icon: Icons.downloading_rounded,
