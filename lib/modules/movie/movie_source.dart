@@ -22,6 +22,14 @@ class MovieSource {
   /// 是否参与聚合搜索
   final bool enabled;
 
+  /// 高画质源。
+  ///
+  /// 这类源实测能给到 1080p 及以上，但响应通常更慢、带宽占用更大，
+  /// 所以**整组默认不参与搜索**，由设置里的一个总开关控制
+  /// （`SettingsKeys.enableHighQualityMovieSources`）。
+  /// 详见 `builtin_movie_sources.dart` 里各源的实测数据。
+  final bool highQuality;
+
   /// 展示顺序
   final int order;
 
@@ -38,6 +46,7 @@ class MovieSource {
     this.detail = '',
     this.isAdult = false,
     this.enabled = true,
+    this.highQuality = false,
     this.order = 0,
     this.lastOkAt = 0,
     this.lastLatencyMs = -1,
@@ -70,6 +79,7 @@ class MovieSource {
     String? detail,
     bool? isAdult,
     bool? enabled,
+    bool? highQuality,
     int? order,
     int? lastOkAt,
     int? lastLatencyMs,
@@ -81,6 +91,7 @@ class MovieSource {
       detail: detail ?? this.detail,
       isAdult: isAdult ?? this.isAdult,
       enabled: enabled ?? this.enabled,
+      highQuality: highQuality ?? this.highQuality,
       order: order ?? this.order,
       lastOkAt: lastOkAt ?? this.lastOkAt,
       lastLatencyMs: lastLatencyMs ?? this.lastLatencyMs,
@@ -111,16 +122,24 @@ class MovieSource {
       detail: pick(['detail', 'ext']),
       isAdult: json['isAdult'] == true || json['adult'] == true,
       enabled: json['enabled'] != false,
+      // 外部导入（LibreTV 源列表 / TVBOX）没有这个字段，一律按普通源处理
+      highQuality: json['highQuality'] == true,
       order: order,
     );
   }
 
   /// 导出成 LibreTV / TVBOX 都能吃的格式。
+  ///
+  /// 同时也用于**本地持久化**（`MovieSourceManager._persist`），所以
+  /// `highQuality` 必须带上 —— 不带的话重启后高画质标记就丢了，
+  /// 那些源会掉进普通源分组。
   Map<String, dynamic> toSourceListJson() => {
         'name': name,
         'url': api,
         if (detail.isNotEmpty) 'detail': detail,
         if (isAdult) 'isAdult': true,
+        if (highQuality) 'highQuality': true,
+        if (!enabled) 'enabled': false,
       };
 
   @override

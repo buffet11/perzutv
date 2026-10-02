@@ -558,10 +558,22 @@ class SettingsKeys {
     group: SettingGroup.player,
   );
 
+  /// 「高画质源」总开关。**默认关闭**。
+  ///
+  /// 高画质源（见 builtin_movie_sources.dart）实测能给到 1080p 及以上，
+  /// 但响应更慢、更费流量，所以默认不参与聚合搜索。
+  /// 关掉时它们完全不出现在搜索里；打开后仍可按源单独停用。
+  static const enableHighQualityMovieSources = SettingKey<bool>(
+    'enableHighQualityMovieSources',
+    false,
+    group: SettingGroup.misc,
+  );
+
   static final List<SettingKey<Object?>> all = [
     hAenable,
     hardwareDecoder,
     searchEnhanceEnable,
+    enableHighQualityMovieSources,
     autoUpdate,
     checkPluginUpdateOnStartup,
     alwaysOntop,

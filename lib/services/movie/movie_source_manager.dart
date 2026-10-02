@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:kazutv/modules/movie/builtin_movie_sources.dart';
 import 'package:kazutv/modules/movie/movie_source.dart';
 import 'package:kazutv/request/apis/apple_cms_api.dart';
+import 'package:kazutv/services/storage/settings_keys.dart';
 import 'package:kazutv/services/storage/storage.dart';
 
 /// 探活结果。
@@ -51,16 +52,63 @@ class MovieSourceManager {
       return _cache!;
     }
     final parsed = parseSourceListJson(raw);
-    _cache = parsed.isEmpty ? builtinMovieSources() : parsed;
+    if (parsed.isEmpty) {
+      _cache = builtinMovieSources();
+      _persist();
+      return _cache!;
+    }
+    final merged = _mergeMissingBuiltins(parsed);
+    if (merged.length != parsed.length) {
+      // 补齐了就顺手归一化 order 并落盘，免得每次启动都重算
+      _setAll(merged);
+      return _cache!;
+    }
+    _cache = parsed;
     return _cache!;
   }
 
+  /// 补齐缺失的内置源。
+  ///
+  /// 老版本存下的列表里没有后来新增的内置源（比如高画质那一组），
+  /// 不补的话它们永远不会出现 —— 用户也没法在设置里看到开关有什么用。
+  /// 只做「新增」，不动用户已有的启停/改名/顺序。
+  static List<MovieSource> _mergeMissingBuiltins(List<MovieSource> existing) {
+    final have = existing.map((s) => s.key).toSet();
+    final missing = builtinMovieSources().where((s) => !have.contains(s.key));
+    if (missing.isEmpty) return existing;
+    return [...existing, ...missing];
+  }
+
+  /// 高画质源是否启用（设置里的总开关）。
+  static bool get highQualityEnabled =>
+      GStorage.getSetting(SettingsKeys.enableHighQualityMovieSources);
+
+  static Future<void> setHighQualityEnabled(bool value) async {
+    await GStorage.putSetting(
+      SettingsKeys.enableHighQualityMovieSources,
+      value,
+    );
+  }
+
   /// 参与聚合搜索的源，按 order 排序。
+  ///
+  /// **高画质源还要过一道总开关**：关着时它们完全不参与（不管自己是不是
+  /// 「启用」），这样用户不必逐个去关。
   static List<MovieSource> enabled() {
-    final list = all().where((s) => s.enabled && s.isUsable).toList();
+    final hqOn = highQualityEnabled;
+    final list = all()
+        .where((s) => s.enabled && s.isUsable && (!s.highQuality || hqOn))
+        .toList();
     list.sort((a, b) => a.order.compareTo(b.order));
     return list;
   }
+
+  /// 普通源 / 高画质源，供设置界面分组展示。
+  static List<MovieSource> normalSources() =>
+      all().where((s) => !s.highQuality).toList();
+
+  static List<MovieSource> highQualitySources() =>
+      all().where((s) => s.highQuality).toList();
 
   static void _persist() {
     final list = _cache ?? [];
@@ -86,6 +134,7 @@ class MovieSourceManager {
     required String api,
     String detail = '',
     bool isAdult = false,
+    bool highQuality = false,
   }) {
     final normalized = api.trim();
     if (name.trim().isEmpty || normalized.isEmpty) return null;
@@ -98,6 +147,7 @@ class MovieSourceManager {
       api: normalized,
       detail: detail.trim(),
       isAdult: isAdult,
+      highQuality: highQuality,
       order: list.length,
     );
     list.add(source);
@@ -115,10 +165,24 @@ class MovieSourceManager {
   }
 
   static bool remove(String key) {
+    // 内置源不可删 —— 界面已经挡了一道，这里再兜一道（它同时是
+    // `_mergeMissingBuiltins` 的前提：内置源会在下次加载时被补回来，
+    // 与其让用户「删了又出现」，不如直接告知不能删）。
+    if (builtinMovieSourceKeys.contains(key)) return false;
     final list = [...all()];
     final before = list.length;
     list.removeWhere((s) => s.key == key);
     if (list.length == before) return false;
+    _setAll(list);
+    return true;
+  }
+
+  /// 把一个自定义源标记/取消「高画质」。
+  static bool setHighQuality(String key, bool value) {
+    final list = [...all()];
+    final i = list.indexWhere((s) => s.key == key);
+    if (i < 0) return false;
+    list[i] = list[i].copyWith(highQuality: value);
     _setAll(list);
     return true;
   }

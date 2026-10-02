@@ -22,6 +22,9 @@ class MovieSourceSettingsPage extends StatefulWidget {
 class _MovieSourceSettingsPageState extends State<MovieSourceSettingsPage> {
   List<MovieSource> _sources = const [];
 
+  /// 高画质源总开关（默认关）
+  bool _highQualityEnabled = false;
+
   /// 正在探活的源 key
   final Set<String> _probing = {};
 
@@ -35,7 +38,16 @@ class _MovieSourceSettingsPageState extends State<MovieSourceSettingsPage> {
   }
 
   void _reload() {
-    setState(() => _sources = MovieSourceManager.all());
+    setState(() {
+      _sources = MovieSourceManager.all();
+      _highQualityEnabled = MovieSourceManager.highQualityEnabled;
+    });
+  }
+
+  Future<void> _toggleHighQuality(bool value) async {
+    await MovieSourceManager.setHighQualityEnabled(value);
+    if (!mounted) return;
+    _reload();
   }
 
   // ---------------------------------------------------------------- 操作
@@ -139,7 +151,14 @@ class _MovieSourceSettingsPageState extends State<MovieSourceSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final enabledCount = _sources.where((s) => s.enabled).length;
+    final normal = _sources.where((s) => !s.highQuality).toList();
+    final highQuality = _sources.where((s) => s.highQuality).toList();
+
+    // 实际参与搜索的源：普通源按自己的开关，高画质源还要过总开关
+    int participating(List<MovieSource> list) => list
+        .where((s) => s.enabled && (!s.highQuality || _highQualityEnabled))
+        .length;
+    final enabledCount = participating(normal) + participating(highQuality);
 
     return SettingsDetailScaffold(
       title: const Text('影视源'),
@@ -174,18 +193,65 @@ class _MovieSourceSettingsPageState extends State<MovieSourceSettingsPage> {
       body: SettingsList(
         sections: [
           SettingsSection(
-            title: Text('共 ${_sources.length} 个源，$enabledCount 个参与搜索'),
+            title: Text('普通源 · ${normal.length} 个，${participating(normal)} 个参与搜索'),
             bottomInfo: const Text(
               '搜索会并发请求所有启用的源；某个源失败不影响其它源，'
-              '失败情况会在搜索结果页列出。',
+              '失败情况会在搜索结果页列出。\n'
+              '采集站的「云线路」给的是网页播放页，应用会自动从页面里解析出'
+              '真实地址，不需要额外配置。平台页面（腾讯/爱奇艺等）需要'
+              '「解析源」—— 那要自己填接口。',
               style: TextStyle(fontSize: 12),
             ),
             tiles: [
-              for (final source in _sources)
+              for (final source in normal)
                 _SourceTile(
                   source: source,
                   probing: _probing.contains(source.key),
                   probeLabel: _probeLabels[source.key],
+                  onToggle: (value) {
+                    MovieSourceManager.setEnabled(source.key, value);
+                    _reload();
+                  },
+                  onTap: () => _edit(source),
+                  onProbe: () => _probe(source),
+                  onDelete: builtinMovieSourceKeys.contains(source.key)
+                      ? null
+                      : () => _remove(source),
+                ),
+            ],
+          ),
+          SettingsSection(
+            title: Text(
+              '高画质源 · ${highQuality.length} 个，'
+              '${participating(highQuality)} 个参与搜索',
+            ),
+            bottomInfo: const Text(
+              '这些源实测能给到 1080p 及以上（只有「光速资源」是每部片都能到，'
+              '其余几个是部分内容能到）。代价是响应更慢、更费流量，所以默认关闭。\n'
+              '关掉时它们完全不参与搜索；打开后仍可逐个停用。',
+              style: TextStyle(fontSize: 12),
+            ),
+            tiles: [
+              SettingsTile(
+                title: const Text('启用高画质源'),
+                description: Text(
+                  _highQualityEnabled
+                      ? '已启用 —— 搜索会多查这几个源，稍微慢一点'
+                      : '当前关闭，搜索只用上面的普通源',
+                ),
+                trailing: Switch(
+                  value: _highQualityEnabled,
+                  onChanged: _toggleHighQuality,
+                ),
+              ),
+              for (final source in highQuality)
+                _SourceTile(
+                  source: source,
+                  probing: _probing.contains(source.key),
+                  probeLabel: _probeLabels[source.key],
+                  // 总开关关着时，单个开关操作了也不生效，直观上容易误解，
+                  // 所以直接禁用它（打开总开关后就能单独调）。
+                  enabledOverride: _highQualityEnabled,
                   onToggle: (value) {
                     MovieSourceManager.setEnabled(source.key, value);
                     _reload();
@@ -213,6 +279,7 @@ class _SourceTile extends StatelessWidget {
     required this.onProbe,
     this.probeLabel,
     this.onDelete,
+    this.enabledOverride,
   });
 
   final MovieSource source;
@@ -225,10 +292,14 @@ class _SourceTile extends StatelessWidget {
   /// 内置源不允许删除（传 null）
   final VoidCallback? onDelete;
 
+  /// 上层总开关的状态。为 false 时这个源的开关不可操作。
+  final bool? enabledOverride;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isBuiltin = builtinMovieSourceKeys.contains(source.key);
+    final interactive = enabledOverride ?? true;
 
     final String status;
     if (probing) {
@@ -243,9 +314,13 @@ class _SourceTile extends StatelessWidget {
       status = '上次失败';
     }
 
+    final title = isBuiltin ? '${source.name}（内置）' : source.name;
+
     return SettingsTile(
-      title: Text(isBuiltin ? '${source.name}（内置）' : source.name),
-      description: Text('${source.api}\n$status'),
+      title: Text(title),
+      description: Text(
+        '${source.api}\n${interactive ? status : "高画质源已关闭"}',
+      ),
       onPressed: (context) => onTap(),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -263,7 +338,7 @@ class _SourceTile extends StatelessWidget {
           ),
           Switch(
             value: source.enabled,
-            onChanged: onToggle,
+            onChanged: interactive ? onToggle : null,
           ),
           if (onDelete != null)
             IconButton(
