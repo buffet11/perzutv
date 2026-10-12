@@ -1,42 +1,42 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:kazutv/pages/player/player_item_panel.dart';
-import 'package:kazutv/pages/player/player_keyboard_shortcuts.dart';
-import 'package:kazutv/pages/player/controller/player_super_resolution.dart';
-import 'package:kazutv/pages/player/player_panel_hold.dart';
-import 'package:kazutv/pages/player/player_pointer_interaction.dart';
-import 'package:kazutv/pages/player/player_gesture_detector.dart';
-import 'package:kazutv/pages/player/player_screenshot_feedback_overlay.dart';
-import 'package:kazutv/pages/player/player_screenshot_sheet.dart';
-import 'package:kazutv/pages/player/controller/player_screenshot_controller.dart';
-import 'package:kazutv/pages/player/syncplay_sheet.dart';
-import 'package:kazutv/utils/constants.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/player/pip_utils.dart';
-import 'package:kazutv/services/sync/webdav.dart';
+import 'package:perzutv/pages/player/player_item_panel.dart';
+import 'package:perzutv/pages/player/player_keyboard_shortcuts.dart';
+import 'package:perzutv/pages/player/controller/player_super_resolution.dart';
+import 'package:perzutv/pages/player/player_panel_hold.dart';
+import 'package:perzutv/pages/player/player_pointer_interaction.dart';
+import 'package:perzutv/pages/player/player_gesture_detector.dart';
+import 'package:perzutv/pages/player/player_screenshot_feedback_overlay.dart';
+import 'package:perzutv/pages/player/player_screenshot_sheet.dart';
+import 'package:perzutv/pages/player/controller/player_screenshot_controller.dart';
+import 'package:perzutv/pages/player/syncplay_sheet.dart';
+import 'package:perzutv/utils/constants.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/player/pip_utils.dart';
+import 'package:perzutv/services/sync/webdav.dart';
 import 'package:flutter/gestures.dart';
-import 'package:kazutv/pages/player/player_controller.dart';
+import 'package:perzutv/pages/player/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/pages/video/video_controller.dart';
+import 'package:perzutv/pages/video/video_controller.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:canvas_danmaku/canvas_danmaku.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/pages/player/video_details_sheet.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/pages/player/video_details_sheet.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
-import 'package:kazutv/pages/history/history_controller.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/modules/danmaku/danmaku_module.dart';
-import 'package:kazutv/pages/player/controller/player_danmaku_controller.dart';
-import 'package:kazutv/pages/player/danmaku_source_sheet.dart';
-import 'package:kazutv/pages/player/player_item_surface.dart';
+import 'package:perzutv/pages/history/history_controller.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/modules/danmaku/danmaku_module.dart';
+import 'package:perzutv/pages/player/controller/player_danmaku_controller.dart';
+import 'package:perzutv/pages/player/danmaku_source_sheet.dart';
+import 'package:perzutv/pages/player/player_item_surface.dart';
 import 'package:mobx/mobx.dart' as mobx;
-import 'package:kazutv/pages/my/my_controller.dart';
-import 'package:kazutv/services/player/audio_controller.dart';
-import 'package:kazutv/services/player/timed_shutdown_service.dart';
-import 'package:kazutv/utils/device.dart';
-import 'package:kazutv/services/platform/player_menu_service.dart';
+import 'package:perzutv/pages/my/my_controller.dart';
+import 'package:perzutv/services/player/audio_controller.dart';
+import 'package:perzutv/services/player/timed_shutdown_service.dart';
+import 'package:perzutv/utils/device.dart';
+import 'package:perzutv/services/platform/player_menu_service.dart';
 
 class PlayerItem extends StatefulWidget {
   const PlayerItem({
@@ -830,7 +830,7 @@ class _PlayerItemState extends State<PlayerItem>
     if (!mounted) return;
 
     // The mediacodec_embed renderer cannot apply super-resolution shaders.
-    if (Platform.isAndroid && mode != SuperResolutionMode.off) {
+    if (Platform.isAndroid && mode.usesSuperResolution) {
       final String androidVideoRenderer =
           GStorage.getSetting(SettingsKeys.androidVideoRenderer);
 
@@ -854,7 +854,7 @@ class _PlayerItemState extends State<PlayerItem>
       }
     }
 
-    final bool requiresPerformanceWarning = mode == SuperResolutionMode.quality;
+    final bool requiresPerformanceWarning = mode.performanceWarning;
     final bool warningDisabled = GStorage.getSetting(
       SettingsKeys.disableSuperResolutionWarning,
     );
@@ -872,7 +872,9 @@ class _PlayerItemState extends State<PlayerItem>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('启用超分辨率（质量档）可能会造成设备卡顿，是否继续？'),
+                const Text('「高清」档使用 Anime4K 的高质量模型，对显卡要求很高，\n'
+                    '核显设备会明显掉帧。是否继续？\n\n'
+                    '若继续后仍然卡顿，画质会自动降低一档。'),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -921,11 +923,23 @@ class _PlayerItemState extends State<PlayerItem>
       });
 
       if (confirmed && mounted) {
+        _notifyShaderApplying(mode);
         playerController.setShader(mode);
       }
     } else {
+      _notifyShaderApplying(mode);
       playerController.setShader(mode);
     }
+  }
+
+  /// 滤镜挂载瞬间 mpv 要编译卷积网络，画面会停顿一下 —— 先解释再执行，
+  /// 免得用户以为播放器卡死了。
+  void _notifyShaderApplying(SuperResolutionMode mode) {
+    if (!mode.usesSuperResolution) return;
+    KazumiDialog.showToast(
+      message: '正在启用「${mode.label}」画质处理，画面可能短暂停顿',
+      duration: const Duration(seconds: 2),
+    );
   }
 
   void handleFullscreen() {

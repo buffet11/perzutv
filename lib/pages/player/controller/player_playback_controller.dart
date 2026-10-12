@@ -1,28 +1,29 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/pages/player/controller/player_debug_controller.dart';
-import 'package:kazutv/pages/player/controller/player_super_resolution.dart';
-import 'package:kazutv/services/shaders/shader_asset_service.dart';
-import 'package:kazutv/utils/constants.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/network/proxy_utils.dart';
-import 'package:kazutv/services/network/system_proxy_service.dart';
-import 'package:kazutv/services/player/playback_cache_policy.dart';
-import 'package:kazutv/services/player/player_error_mapper.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/video_source/video_source_format.dart';
-import 'package:kazutv/utils/async_serial_queue.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/pages/player/controller/player_debug_controller.dart';
+import 'package:perzutv/pages/player/controller/player_super_resolution.dart';
+import 'package:perzutv/services/shaders/shader_asset_service.dart';
+import 'package:perzutv/utils/constants.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/network/proxy_utils.dart';
+import 'package:perzutv/services/network/system_proxy_service.dart';
+import 'package:perzutv/services/player/playback_cache_policy.dart';
+import 'package:perzutv/services/player/player_error_mapper.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/video_source/video_source_format.dart';
+import 'package:perzutv/utils/async_serial_queue.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:mobx/mobx.dart';
-import 'package:kazutv/utils/device.dart';
-import 'package:kazutv/utils/media.dart';
-import 'package:kazutv/services/platform/platform_environment_service.dart';
+import 'package:perzutv/utils/device.dart';
+import 'package:perzutv/utils/media.dart';
+import 'package:perzutv/services/platform/platform_environment_service.dart';
 
 part 'player_playback_controller.g.dart';
 
@@ -78,6 +79,11 @@ abstract class _PlayerPlaybackController with Store {
 
   final AsyncSerialQueue _prefetchWrites = AsyncSerialQueue();
   bool _prefetchSuspendWanted = false;
+
+  /// 画质处理（超分辨率）的卡顿守护状态。
+  Timer? _guardTicker;
+  SuperResolutionMode _guardMode = SuperResolutionMode.off;
+  int _guardStrikes = 0;
 
   bool hAenable = true;
   late String hardwareDecoder;
@@ -274,6 +280,8 @@ abstract class _PlayerPlaybackController with Store {
     VideoSourceFormat videoSourceFormat = VideoSourceFormat.auto,
   }) async {
     startOffset = offset;
+    // 上一次播放的性能守护必须停掉：它持有的是旧 player，会一直空转。
+    _stopPerformanceGuard();
     superResolutionMode = SuperResolutionMode.fromStorageValue(
       GStorage.getSetting(SettingsKeys.defaultSuperResolutionMode),
     );
@@ -376,6 +384,25 @@ abstract class _PlayerPlaybackController with Store {
         return await _discardIfNotCurrent(candidate);
       }
 
+      // 桌面端 GPU 后端：mpv 的 GLSL 滤镜在不同后端上的编译/渲染开销差别很大，
+      // 卡顿时值得换一个试试。默认 auto 表示不干预，保持 media_kit 原有行为。
+      // 必须在 VideoController 创建之前写入，vo 一旦初始化就改不动了。
+      if (isDesktop()) {
+        final String desktopGpuApi =
+            GStorage.getSetting(SettingsKeys.desktopGpuApi);
+        if (desktopGpuApi != 'auto' && desktopGpuApi.isNotEmpty) {
+          try {
+            await pp.setProperty('gpu-api', desktopGpuApi);
+            KazumiLogger().i('Player: GPU 后端已设为 $desktopGpuApi');
+            if (!isCurrentPlayer(player)) {
+              return await _discardIfNotCurrent(candidate);
+            }
+          } catch (e) {
+            KazumiLogger().w('Player: 设置 GPU 后端失败', error: e);
+          }
+        }
+      }
+
       String? videoRenderer;
       if (Platform.isAndroid) {
         final String androidVideoRenderer =
@@ -442,12 +469,11 @@ abstract class _PlayerPlaybackController with Store {
             error: event);
       });
 
-      if (superResolutionMode != SuperResolutionMode.off) {
-        await setShader(superResolutionMode, player: player);
-        if (!isCurrentPlayer(player)) {
-          return await _discardIfNotCurrent(candidate);
-        }
-      }
+      // 画质滤镜**不**在这里挂载。Anime4K 的卷积网络要等首帧真正渲染时才编译，
+      // 在核显上这一编译会占满 GPU 数秒，表现就是"一开超分画面直接冻住"。
+      // 改为起播完成后再异步挂载：先让用户看到画面，再看到画质提升。
+      final bool pendingSuperResolution =
+          superResolutionMode.usesSuperResolution;
 
       if (videoSourceFormat == VideoSourceFormat.hls) {
         await pp.setProperty('demuxer-lavf-format', 'hls');
@@ -469,6 +495,10 @@ abstract class _PlayerPlaybackController with Store {
         KazumiDialog.showToast(message: '移动数据下已自动开启低内存模式，可在播放设置中改为始终关闭');
       }
 
+      if (pendingSuperResolution) {
+        unawaited(_applySuperResolutionAfterStart(player));
+      }
+
       return player;
     } catch (error, stackTrace) {
       if (identical(_ownedPlayer, candidate)) {
@@ -478,6 +508,52 @@ abstract class _PlayerPlaybackController with Store {
       }
       await candidate.dispose();
       Error.throwWithStackTrace(error, stackTrace);
+    }
+  }
+
+  /// 某个画质档对应的 Anime4K 滤镜链；关闭档返回空列表。
+  List<String> _shaderChainFor(SuperResolutionMode mode) {
+    switch (mode) {
+      case SuperResolutionMode.smooth:
+        return mpvAnime4KShadersSmooth;
+      case SuperResolutionMode.balance:
+        return mpvAnime4KShadersStandard;
+      case SuperResolutionMode.quality:
+        return mpvAnime4KShadersHighQuality;
+      case SuperResolutionMode.off:
+        return const <String>[];
+    }
+  }
+
+  /// 起播后再挂载画质滤镜。
+  ///
+  /// 之所以延后：Anime4K 的卷积网络要到首帧真正渲染时才编译，核显上这一步能
+  /// 占满 GPU 数秒，用户看到的就是"一开超分画面直接冻住"。延后挂载让视频先
+  /// 正常播起来，再叠加滤镜，期间最多停顿一下。
+  Future<void> _applySuperResolutionAfterStart(Player player) async {
+    try {
+      // 先等画面真正出来（最多 6 秒）。滤镜编译的停顿发生在一个已经在播的
+      // 画面上，用户只会看到一次短暂停顿；若在起播前挂载，停顿会直接吃掉
+      // 首帧，看起来就是"卡住不动"。
+      for (var attempt = 0; attempt < 20; attempt++) {
+        if (!isCurrentPlayer(player)) return;
+        if (!playerBuffering &&
+            playerPlaying &&
+            playerPosition > Duration.zero) {
+          break;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      }
+      if (!isCurrentPlayer(player)) return;
+      // 这段时间里用户可能已经改了档位，以最新选择为准。
+      final mode = superResolutionMode;
+      if (!mode.usesSuperResolution) return;
+      await setShader(mode, player: player);
+    } catch (e) {
+      KazumiLogger().w(
+        'PlayerController: failed to apply super resolution after start',
+        error: e,
+      );
     }
   }
 
@@ -491,37 +567,98 @@ abstract class _PlayerPlaybackController with Store {
       if (!identical(mediaPlayer, currentPlayer)) {
         return;
       }
-      switch (mode) {
-        case SuperResolutionMode.efficiency:
-          await pp.command([
-            'change-list',
-            'glsl-shaders',
-            'set',
-            buildShadersAbsolutePath(
-              shaderAssetService.shadersDirectory.path,
-              mpvAnime4KShadersLite,
-            ),
-          ]);
-          break;
-        case SuperResolutionMode.quality:
-          await pp.command([
-            'change-list',
-            'glsl-shaders',
-            'set',
-            buildShadersAbsolutePath(
-              shaderAssetService.shadersDirectory.path,
-              mpvAnime4KShaders,
-            ),
-          ]);
-          break;
-        case SuperResolutionMode.off:
-          await pp.command(['change-list', 'glsl-shaders', 'clr', '']);
-          break;
+      final List<String> chain = _shaderChainFor(mode);
+      if (chain.isEmpty) {
+        await pp.command(['change-list', 'glsl-shaders', 'clr', '']);
+      } else {
+        await pp.command([
+          'change-list',
+          'glsl-shaders',
+          'set',
+          buildShadersAbsolutePath(
+            shaderAssetService.shadersDirectory.path,
+            chain,
+          ),
+        ]);
       }
       superResolutionMode = mode;
+      if (chain.isEmpty) {
+        _stopPerformanceGuard();
+      } else {
+        _startPerformanceGuard(currentPlayer, mode);
+      }
     } catch (e) {
       KazumiLogger().w('PlayerController: failed to set shader', error: e);
     }
+  }
+
+  /// 启动画面处理后的性能守护。
+  ///
+  /// 核显跑 Anime4K 时最难受的不是"略卡"，而是帧率掉到个位数、整段没法看。
+  /// 这里周期性比对源帧率与滤镜链实际输出帧率，持续跟不上就自动降一档。
+  void _startPerformanceGuard(Player player, SuperResolutionMode mode) {
+    _stopPerformanceGuard();
+    if (!mode.usesSuperResolution) return;
+    _guardMode = mode;
+    _guardStrikes = 0;
+    _guardTicker = Timer.periodic(const Duration(seconds: 2), (_) {
+      unawaited(_performanceGuardTick(player));
+    });
+  }
+
+  void _stopPerformanceGuard() {
+    _guardTicker?.cancel();
+    _guardTicker = null;
+    _guardStrikes = 0;
+  }
+
+  Future<void> _performanceGuardTick(Player player) async {
+    if (!isCurrentPlayer(player) || !playerPlaying || playerBuffering) {
+      // 暂停、缓冲、切集时不作为性能依据，否则会误伤。
+      _guardStrikes = 0;
+      return;
+    }
+    final platform = player.platform;
+    if (platform is! NativePlayer) return;
+
+    final double sourceFps;
+    final double renderFps;
+    try {
+      sourceFps =
+          double.tryParse(await platform.getProperty('container-fps')) ?? 0;
+      renderFps =
+          double.tryParse(await platform.getProperty('estimated-vf-fps')) ?? 0;
+    } catch (_) {
+      // 属性拿不到就放弃这次判定，宁可漏判也不能误判。
+      _guardStrikes = 0;
+      return;
+    }
+    if (sourceFps <= 1 || renderFps <= 0) {
+      _guardStrikes = 0;
+      return;
+    }
+    if (renderFps < sourceFps * 0.8) {
+      _guardStrikes++;
+    } else {
+      _guardStrikes = 0;
+    }
+    if (_guardStrikes < 3) return;
+    _stopPerformanceGuard();
+    unawaited(_downgradeSuperResolution(player));
+  }
+
+  Future<void> _downgradeSuperResolution(Player player) async {
+    final failed = _guardMode;
+    final next = failed.lighterMode ?? SuperResolutionMode.off;
+    if (!isCurrentPlayer(player)) return;
+    await setShader(next, player: player);
+    if (!isCurrentPlayer(player)) return;
+    KazumiDialog.showToast(
+      message: next == SuperResolutionMode.off
+          ? '已关闭画质处理：「${failed.label}」档超出本机性能，播放会卡顿'
+          : '「${failed.label}」档超出本机性能，已自动降为「${next.label}」档',
+      duration: const Duration(seconds: 6),
+    );
   }
 
   Future<void> setPlaybackSpeed(double playerSpeed) async {
@@ -616,6 +753,7 @@ abstract class _PlayerPlaybackController with Store {
 
   Future<void> stop() async {
     cachePolicy.stopWatching();
+    _stopPerformanceGuard();
     final ownedPlayer = _ownedPlayer;
     _ownedPlayer = null;
     videoController = null;

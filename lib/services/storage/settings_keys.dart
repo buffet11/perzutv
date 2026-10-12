@@ -1,4 +1,4 @@
-import 'package:kazutv/services/player/syncplay_endpoint.dart';
+import 'package:perzutv/services/player/syncplay_endpoint.dart';
 
 enum SettingGroup {
   player,
@@ -153,6 +153,22 @@ class SettingsKeys {
     0,
     group: SettingGroup.danmaku,
   );
+  // 自定义弹幕 API（弹弹play 兼容协议，如自建 danmu_api）。
+  // 留空 = 使用官方 api.dandanplay.net（需要 CI 注入的 AppId 签名）。
+  // 填写后所有弹幕请求改走该地址，且不带签名头（自建服务不校验）。
+  // 地址需含 token 前缀，例如 http://127.0.0.1:9321/87654321。
+  static const customDanmakuApi = SettingKey<String>(
+    'customDanmakuApi',
+    '',
+    group: SettingGroup.danmaku,
+  );
+  // 内置弹幕服务（Windows 桌面端）：随应用启动本机 danmu_api（Node.js），
+  // 开启后优先于「自定义弹幕 API」地址。关闭则回落到自定义地址/官方源。
+  static const danmakuEmbeddedService = SettingKey<bool>(
+    'danmakuEmbeddedService',
+    true,
+    group: SettingGroup.danmaku,
+  );
   static const danmakuArea = SettingKey<double>(
     _SettingBoxKey.danmakuArea,
     1.0,
@@ -281,7 +297,7 @@ class SettingsKeys {
   );
   static const defaultStartupPage = SettingKey<String>(
     _SettingBoxKey.defaultStartupPage,
-    '/tab/popular/',
+    '/tab/anime/',
     group: SettingGroup.interface,
   );
   static const webDavEnable = SettingKey<bool>(
@@ -400,6 +416,16 @@ class SettingsKeys {
     false,
     group: SettingGroup.player,
   );
+
+  /// 桌面端（Windows / Linux）传给 mpv 的 GPU 后端。
+  ///
+  /// 'auto' 表示完全不干预，保持 media_kit 原有行为；其余值以 `--gpu-api=`
+  /// 注入。GLSL 滤镜在不同后端上的支持情况与性能差异很大，卡顿时值得逐个试。
+  static const desktopGpuApi = SettingKey<String>(
+    'desktopGpuApi',
+    'auto',
+    group: SettingGroup.player,
+  );
   static const playerDisableAnimations = SettingKey<bool>(
     _SettingBoxKey.playerDisableAnimations,
     false,
@@ -502,6 +528,16 @@ class SettingsKeys {
     false,
     group: SettingGroup.misc,
   );
+
+  /// 首次启动引导（免责声明 / 更新来源）是否已走完。
+  ///
+  /// 为什么不用「有没有安装规则」来判断首次启动：番剧规则插件已整体移除，
+  /// 原判据永远为真，引导页就再也不会出现了 —— 而免责声明必须首启可见。
+  static const onboardingCompleted = SettingKey<bool>(
+    _SettingBoxKey.onboardingCompleted,
+    false,
+    group: SettingGroup.misc,
+  );
   static const bangumiSyncEnable = SettingKey<bool>(
     _SettingBoxKey.bangumiSyncEnable,
     false,
@@ -558,14 +594,19 @@ class SettingsKeys {
     group: SettingGroup.player,
   );
 
-  /// 「高画质源」总开关。**默认关闭**。
+  /// 「高画质源」总开关。**默认开启**。
   ///
   /// 高画质源（见 builtin_movie_sources.dart）实测能给到 1080p 及以上，
-  /// 但响应更慢、更费流量，所以默认不参与聚合搜索。
-  /// 关掉时它们完全不出现在搜索里；打开后仍可按源单独停用。
+  /// 代价是响应更慢、更费流量。默认开启，让开箱就能拿到更好的画质；
+  /// 觉得搜索变慢可随时关闭，关掉后它们完全不参与聚合搜索，
+  /// 打开时也仍可按源单独停用。
+  ///
+  /// 注意：这条默认值只对「存储里还没有这个键」的情况生效 —— 已经跑过的
+  /// 用户机器上 hive 里存着旧值，改默认值不会覆盖它，需要在
+  /// 「设置 → 影视源 → 启用高画质源」里手动开关一次。
   static const enableHighQualityMovieSources = SettingKey<bool>(
     'enableHighQualityMovieSources',
-    false,
+    true,
     group: SettingGroup.misc,
   );
 
@@ -593,6 +634,8 @@ class SettingsKeys {
     danmakuMassive,
     danmakuDeduplication,
     danmakuChConvert,
+    customDanmakuApi,
+    danmakuEmbeddedService,
     danmakuArea,
     danmakuColor,
     danmakuDuration,
@@ -642,6 +685,7 @@ class SettingsKeys {
     androidAutoEnterPIP,
     defaultSuperResolutionMode,
     disableSuperResolutionWarning,
+    desktopGpuApi,
     playerDisableAnimations,
     playerLogLevel,
     timelineNotShowAbandonedBangumis,
@@ -662,6 +706,7 @@ class SettingsKeys {
     downloadDirectory,
     downloadDirectoryBookmark,
     shortcutDialogShown,
+    onboardingCompleted,
     bangumiSyncEnable,
     bangumiAccessToken,
     bangumiSyncPriority,
@@ -776,5 +821,6 @@ class _SettingBoxKey {
       brightnessVolumeGesture = 'brightnessVolumeGesture',
       historySyncDeviceId = 'historySyncDeviceId',
       historySyncSequence = 'historySyncSequence',
-      historySyncSnapshotInitialized = 'historySyncSnapshotInitialized';
+      historySyncSnapshotInitialized = 'historySyncSnapshotInitialized',
+      onboardingCompleted = 'onboardingCompleted';
 }

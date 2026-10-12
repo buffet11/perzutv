@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:kazutv/request/config/api_endpoints.dart';
+import 'package:perzutv/request/config/api_endpoints.dart';
 
 class StyleString {
   static const double cardSpace = 8;
@@ -87,7 +87,7 @@ const List<String> acceptLanguageList = [
 /// Bangumi API 文档要求的UA格式
 Map<String, String> bangumiHTTPHeader = {
   'user-agent':
-      'Kazutv/${ApiEndpoints.version} (https://github.com/buffet11/kazutv)',
+      'Perzutv/${ApiEndpoints.version} (https://github.com/buffet11/perzutv)',
   'referer': '',
   'content-type': 'application/json'
 };
@@ -129,8 +129,11 @@ const Map<String, String> androidVideoRenderersList = {
   'mediacodec_embed': '功耗最低，不支持超分辨率',
 };
 
-/// 超分辨率滤镜
-const List<String> mpvAnime4KShaders = [
+/// 超分辨率滤镜（高清档）
+///
+/// VL 模型单张滤镜就有 ~145KB 的卷积权重，两级放大叠加后单帧开销极大，
+/// 只适合中高端独显。核显请使用下面两档。
+const List<String> mpvAnime4KShadersHighQuality = [
   'Anime4K_Clamp_Highlights.glsl',
   'Anime4K_Restore_CNN_VL.glsl',
   'Anime4K_Upscale_CNN_x2_VL.glsl',
@@ -139,16 +142,36 @@ const List<String> mpvAnime4KShaders = [
   'Anime4K_Upscale_CNN_x2_M.glsl'
 ];
 
-/// 超分辨率滤镜 (轻量)
-const List<String> mpvAnime4KShadersLite = [
+/// 超分辨率滤镜（标准档）
+///
+/// 只保留 S 模型的两级处理，并按 Anime4K 官方推荐把 AutoDownscalePre 放在
+/// 放大之前 —— 输出分辨率不足输入两倍时先降采样，避免无意义的高倍放大。
+const List<String> mpvAnime4KShadersStandard = [
   'Anime4K_Clamp_Highlights.glsl',
-  'Anime4K_Restore_CNN_M.glsl',
-  'Anime4K_Restore_CNN_S.glsl',
-  'Anime4K_Upscale_CNN_x2_M.glsl',
   'Anime4K_AutoDownscalePre_x2.glsl',
   'Anime4K_AutoDownscalePre_x4.glsl',
+  'Anime4K_Restore_CNN_S.glsl',
   'Anime4K_Upscale_CNN_x2_S.glsl'
 ];
+
+/// 超分辨率滤镜（流畅档）
+///
+/// 单级 S 模型放大，是 Anime4K 里最轻的配置，核显与笔记本可以长期开启。
+const List<String> mpvAnime4KShadersSmooth = [
+  'Anime4K_Clamp_Highlights.glsl',
+  'Anime4K_Upscale_CNN_x2_S.glsl'
+];
+
+/// 桌面端可选的 mpv GPU 后端
+///
+/// 默认「自动」表示完全不干预；其余值以 `--gpu-api=` 传给 mpv。
+/// 不同后端对 GLSL 滤镜的支持与性能差异很大，卡顿时值得逐个试。
+const Map<String, String> desktopGpuApiList = {
+  'auto': '自动（使用播放器默认后端）',
+  'd3d11': 'Direct3D 11（Windows 默认，滤镜性能一般）',
+  'vulkan': 'Vulkan（滤镜性能通常最好，需较新驱动）',
+  'opengl': 'OpenGL（兼容性最好，性能偏低）',
+};
 
 /// 可选播放倍速
 const List<double> defaultPlaySpeedList = [

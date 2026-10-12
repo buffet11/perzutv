@@ -5,27 +5,27 @@ import 'package:canvas_danmaku/models/danmaku_content_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kazutv/bean/widget/play_pause_icon.dart';
-import 'package:kazutv/pages/player/player_adjustment_hud.dart';
-import 'package:kazutv/pages/player/danmaku_destination_sheet.dart';
-import 'package:kazutv/pages/player/controller/player_aspect_ratio.dart';
-import 'package:kazutv/pages/player/controller/player_super_resolution.dart';
-import 'package:kazutv/bean/widget/embedded_native_control_area.dart';
-import 'package:kazutv/pages/player/player_panel_hold.dart';
-import 'package:kazutv/services/player/pip_utils.dart';
-import 'package:kazutv/pages/video/video_controller.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/pages/player/player_controller.dart';
+import 'package:perzutv/bean/widget/play_pause_icon.dart';
+import 'package:perzutv/pages/player/player_adjustment_hud.dart';
+import 'package:perzutv/pages/player/danmaku_destination_sheet.dart';
+import 'package:perzutv/pages/player/controller/player_aspect_ratio.dart';
+import 'package:perzutv/pages/player/controller/player_super_resolution.dart';
+import 'package:perzutv/bean/widget/embedded_native_control_area.dart';
+import 'package:perzutv/pages/player/player_panel_hold.dart';
+import 'package:perzutv/services/player/pip_utils.dart';
+import 'package:perzutv/pages/video/video_controller.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/pages/player/player_controller.dart';
 import 'package:flutter/services.dart';
-import 'package:kazutv/services/player/remote.dart';
-import 'package:kazutv/bean/appbar/drag_to_move_bar.dart' as dtb;
-import 'package:kazutv/pages/settings/danmaku/danmaku_settings_sheet.dart';
-import 'package:kazutv/utils/constants.dart';
+import 'package:perzutv/services/player/remote.dart';
+import 'package:perzutv/bean/appbar/drag_to_move_bar.dart' as dtb;
+import 'package:perzutv/pages/settings/danmaku/danmaku_settings_sheet.dart';
+import 'package:perzutv/utils/constants.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:kazutv/services/player/timed_shutdown_service.dart';
-import 'package:kazutv/utils/format.dart';
-import 'package:kazutv/pages/player/player_transport_bar.dart';
-import 'package:kazutv/pages/player/player_screenshot_controls.dart';
+import 'package:perzutv/services/player/timed_shutdown_service.dart';
+import 'package:perzutv/utils/format.dart';
+import 'package:perzutv/pages/player/player_transport_bar.dart';
+import 'package:perzutv/pages/player/player_screenshot_controls.dart';
 
 class PlayerItemPanel extends StatefulWidget {
   const PlayerItemPanel({
@@ -661,7 +661,7 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
             const Spacer(),
         ],
         _menuButton(
-          child: const Text('超分辨率', style: TextStyle(color: Colors.white)),
+          child: const Text('画质', style: TextStyle(color: Colors.white)),
           items: _superResolutionItems,
         ),
         _menuButton(
@@ -834,10 +834,8 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                   ),
                 ),
               if (compact) _buildDanmakuToggleButton(context),
-              PlayerPanelHoldCollectButton(
-                acquirePlayerPanelHold: widget.acquirePlayerPanelHold,
-                bangumiItem: videoPageController.bangumiItem,
-              ),
+              // 「追番」收藏按钮已随番剧功能移除：影视 / 动漫播放时的
+              // bangumiItem 只是纯展示占位对象，收藏它没有任何意义。
               PlayerPanelHoldMenuAnchor(
                 acquirePlayerPanelHold: widget.acquirePlayerPanelHold,
                 onVisibilityChanged: widget.onMenuVisibilityChanged,
@@ -868,7 +866,7 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                         menuChildren: _speedItems, child: _menuLabel('倍速')),
                     SubmenuButton(
                         menuChildren: _superResolutionItems,
-                        child: _menuLabel('超分辨率')),
+                        child: _menuLabel('画质')),
                     _syncPlayMenuItem,
                   ],
                   MenuItemButton(

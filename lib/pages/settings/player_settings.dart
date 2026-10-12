@@ -2,15 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/pages/player/controller/player_aspect_ratio.dart';
-import 'package:kazutv/pages/settings/low_memory_mode_settings.dart';
-import 'package:kazutv/utils/constants.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/player/pip_utils.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/utils/device.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/pages/player/controller/player_aspect_ratio.dart';
+import 'package:perzutv/pages/settings/low_memory_mode_settings.dart';
+import 'package:perzutv/utils/constants.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/player/pip_utils.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/utils/device.dart';
 
 class PlayerSettingsPage extends StatefulWidget {
   const PlayerSettingsPage({super.key});
@@ -93,7 +93,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
     final bool shouldReset = await KazumiDialog.show<bool>(
           builder: (context) => AlertDialog(
             title: const Text('恢复默认播放设置'),
-            content: const Text('播放设置、硬件解码器、视频渲染器和超分辨率设置将恢复为默认值。'),
+            content: const Text('播放设置、硬件解码器、视频渲染器和画质处理设置将恢复为默认值。'),
             actions: [
               TextButton(
                 onPressed: () => KazumiDialog.dismiss(popWith: false),
@@ -299,7 +299,8 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                 onPressed: (_) async {
                   context.pushNamed('/settings/player/super');
                 },
-                title: Text('超分辨率'),
+                title: Text('画质处理'),
+                description: Text('超分辨率档位与画面处理'),
               ),
             ],
           ),
