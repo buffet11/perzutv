@@ -1,13 +1,13 @@
 # NOTICE — 第三方组件、上游项目与致谢
 
-本文件记录 Kazutv 所依赖、参考与派生的第三方项目，以及相应的许可证义务。
+本文件记录 Perzutv 所依赖、参考与派生的第三方项目，以及相应的许可证义务。
 本文件的全部内容均需保留，不得删改。
 
 ---
 
 ## 1. 本作品的性质
 
-**Kazutv** 是基于 [Kazumi](https://github.com/Predidit/Kazumi) 的二次开发分支（fork）。
+**Perzutv** 是基于 [Kazumi](https://github.com/Predidit/Kazumi) 的二次开发分支（fork）。
 
 - 上游项目：Kazumi
 - 上游作者：Predidit 及[全体贡献者](https://github.com/Predidit/Kazumi/graphs/contributors)
@@ -17,7 +17,7 @@
 依据 GNU GPL-3.0 第 5(a) 条，本作品已在 [README.md](README.md) 与本文件中
 显著声明其为经过修改的版本，并注明了修改日期。
 
-Kazutv 与上游作者之间**不存在隶属、赞助或背书关系**。上游项目名与作者署名
+Perzutv 与上游作者之间**不存在隶属、赞助或背书关系**。上游项目名与作者署名
 不得被用于暗示对本分支的认可。
 
 ---
@@ -29,7 +29,7 @@ Kazutv 与上游作者之间**不存在隶属、赞助或背书关系**。上游
 - 项目：<https://github.com/LibreSpark/LibreTV>
 - 许可证：GNU Affero General Public License v3.0 (AGPL-3.0)
 
-Kazutv 的影视内容聚合能力，基于对 LibreTV 所实现的**苹果CMS（Apple CMS）采集接口协议**
+Perzutv 的影视内容聚合能力，基于对 LibreTV 所实现的**苹果CMS（Apple CMS）采集接口协议**
 的理解，使用 Dart 重新实现。协议本身为公开事实，实现代码为独立编写，
 但设计思路与边界条件处理参考了 LibreTV 的实现，故在此致谢并声明。
 
@@ -74,6 +74,7 @@ Kazutv 的影视内容聚合能力，基于对 LibreTV 所实现的**苹果CMS�
 | [弹弹play 开放弹幕网络](https://doc.dandanplay.net/open/) | 弹幕收发、番剧搜索、番剧信息 | **需自行申请 AppId / AppSecret**，使用需遵守其[使用规定](https://doc.dandanplay.net/open/) |
 | [Bangumi](https://bangumi.tv/) | 番剧元数据 | 遵循其开放 API 使用条款 |
 | [trace.moe](https://trace.moe) | 以图搜番 | |
+| [哔哩哔哩](https://www.bilibili.com/) | 「正版番剧」功能的官方外链播放器与公开元数据接口 | 仅嵌入 B 站官方播放器页面，不解析、不转存视频流；需登录或会员的内容由 B 站侧判定 |
 | 各类第三方影视采集接口 | 影视内容索引 | 由用户自行配置；本软件不内置、不托管任何此类内容 |
 
 ---
