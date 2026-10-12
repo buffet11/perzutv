@@ -1,9 +1,10 @@
-# Kazutv
+# Perzutv
 
-> 番剧 + 影视，一个播放器
+> 动漫 + 影视，一个播放器
 
-Kazutv 是 [**Kazumi**](https://github.com/Predidit/Kazumi) 的二次开发分支。保留上游的番剧采集、
-播放与弹幕能力，在其之上新增影视（电影 / 剧集 / 综艺）聚合播放，并增强弹幕的自动匹配。
+Perzutv 是 [**Kazumi**](https://github.com/Predidit/Kazumi) 的二次开发分支。保留上游的番剧采集、
+播放与弹幕能力，在其之上新增影视（电影 / 剧集 / 综艺）聚合播放、动漫分区浏览，以及把
+**B 站官方外链播放器**接进应用内的正版观看入口。已增强弹幕的自动匹配。
 
 > **本仓库是 Kazumi 的修改版本，非官方版本，与上游作者无隶属关系。**
 > 修改起始日期 **2026-10-01**（依 GPL-3.0 §5(a) 声明本作品已被修改）。
@@ -26,8 +27,13 @@ Kazutv 是 [**Kazumi**](https://github.com/Predidit/Kazumi) 的二次开发分�
 - [ ] 影视弹幕**自动检索 + 自动加载**（独立开关，默认关闭）
 - [ ] 弹幕匹配纠错：手动指定后记住选择，下次直接命中
 - [ ] 影视收藏与观看历史续播
+- [x] **正版番剧**：应用内加载 B 站官方外链播放器。粘贴链接 / BV 号 / 剧集号即可播放，
+  整季链接会列出选集；**只嵌入官方播放器、不解析视频流**，解码与鉴权都在 B 站侧完成，
+  因此不占用本机解码资源（B 站侧需要登录或会员的内容，请用系统浏览器打开观看）。
+  另有画质档位（关闭 / 流畅 / 标准 / 高清）与**卡顿自动降档** —— 渲染帧率持续跟不上
+  视频帧率时会自动降一档并提示，避免核显设备卡到没法看。
 
-设计细节见 [`docs/Kazutv-融合设计方案.md`](docs/Kazutv-融合设计方案.md)。
+设计细节见 [`docs/Perzutv-融合设计方案.md`](docs/Perzutv-融合设计方案.md)。
 
 ## 平台
 
@@ -61,8 +67,8 @@ flutter build windows \
   --dart-define=DANDANAPI_KEY=<AppSecret>
 ```
 
-也可以把这两项写进项目根目录的 `.kazutv_build_defines.env`（模板见
-`.kazutv_build_defines.env.example`），`build.bat` 会自动读取。该文件已被 gitignore。
+也可以把这两项写进项目根目录的 `.perzutv_build_defines.env`（模板见
+`.perzutv_build_defines.env.example`），`build.bat` 会自动读取。该文件已被 gitignore。
 
 > 凭据会被编译进客户端二进制，请勿提交到公开仓库。
 

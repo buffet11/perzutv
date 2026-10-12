@@ -1,29 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/bean/widget/error_widget.dart';
-import 'package:kazutv/bean/widget/image_preview.dart';
-import 'package:kazutv/pages/collect/collect_module.dart';
-import 'package:kazutv/pages/index_page.dart';
-import 'package:kazutv/pages/info/info_module.dart';
-import 'package:kazutv/pages/init_page.dart';
-import 'package:kazutv/pages/movie/movie_module.dart';
-import 'package:kazutv/pages/my/my_module.dart';
-import 'package:kazutv/pages/onboarding/onboarding_page.dart';
-import 'package:kazutv/pages/popular/popular_controller.dart';
-import 'package:kazutv/pages/popular/popular_module.dart';
-import 'package:kazutv/pages/route_error_page.dart';
-import 'package:kazutv/pages/search/search_module.dart';
-import 'package:kazutv/pages/settings/settings_module.dart';
-import 'package:kazutv/pages/timeline/timeline_controller.dart';
-import 'package:kazutv/pages/timeline/timeline_module.dart';
-import 'package:kazutv/pages/video/video_module.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/plugins/plugins_controller.dart';
-import 'package:kazutv/pages/collect/collect_controller.dart';
-import 'package:kazutv/pages/my/my_controller.dart';
-import 'package:kazutv/pages/download/download_controller.dart';
-import 'package:kazutv/services/shaders/shader_asset_service.dart';
-import 'package:kazutv/services/sync/danmaku_shield_sync_service.dart';
+import 'package:perzutv/bean/widget/error_widget.dart';
+import 'package:perzutv/bean/widget/image_preview.dart';
+import 'package:perzutv/pages/anime/anime_module.dart';
+import 'package:perzutv/pages/index_page.dart';
+import 'package:perzutv/pages/init_page.dart';
+import 'package:perzutv/pages/movie/movie_module.dart';
+import 'package:perzutv/pages/my/my_module.dart';
+import 'package:perzutv/pages/official/official_module.dart';
+import 'package:perzutv/pages/onboarding/onboarding_page.dart';
+import 'package:perzutv/pages/route_error_page.dart';
+import 'package:perzutv/pages/settings/settings_module.dart';
+import 'package:perzutv/pages/video/video_module.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/pages/my/my_controller.dart';
+import 'package:perzutv/services/shaders/shader_asset_service.dart';
+import 'package:perzutv/utils/startup_page.dart';
 
 final _tabTransition = CustomTransition(
   duration: const Duration(milliseconds: 70),
@@ -44,8 +36,9 @@ final tabModule = createModule(
   register: (c) {
     c
       // Tab state survives tab switches, but is released with the whole shell.
-      ..addSingleton<PopularController>(PopularController.new)
-      ..addSingleton<TimelineController>(TimelineController.new)
+      //
+      // 番剧相关的 PopularController / TimelineController 已随功能移除，
+      // 剩下的三个 Tab 只有动漫一个需要常驻控制器（在 animeModule 里注册）。
       ..route(
         '/',
         child: (context, state) => IndexPage(location: state.uri.path),
@@ -55,13 +48,13 @@ final tabModule = createModule(
             ..route(
               '/',
               guards: [
-                (state) => GStorage.getSetting(SettingsKeys.defaultStartupPage),
+                // 存储里的启动页可能已被删除（番剧 Tab 没了），必须过滤
+                (state) => StartupPage.resolve(
+                    GStorage.getSetting(SettingsKeys.defaultStartupPage)),
               ],
               child: (context, state) => const SizedBox.shrink(),
             )
-            ..module(popularModule)
-            ..module(timelineModule)
-            ..module(collectModule)
+            ..module(animeModule)
             ..module(movieModule)
             ..module(myModule);
         },
@@ -75,19 +68,14 @@ final indexModule = createModule(
       ..route(
         '/',
         child: (context, state) => InitPage(
-          pluginsController: inject<PluginsController>(),
-          collectController: inject<CollectController>(),
           shaderAssetService: inject<ShaderAssetService>(),
           myController: inject<MyController>(),
-          downloadController: inject<DownloadController>(),
-          danmakuShieldSync: inject<DanmakuShieldSyncService>(),
         ),
         transition: TransitionType.none,
       )
       ..route(
         '/onboarding',
         child: (context, state) => OnboardingPage(
-          pluginsController: inject<PluginsController>(),
           myController: inject<MyController>(),
         ),
         transition: TransitionType.none,
@@ -95,7 +83,7 @@ final indexModule = createModule(
       ..route(
         '/error',
         child: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Kazutv')),
+          appBar: AppBar(title: const Text('Perzutv')),
           body: const GeneralErrorWidget(
             title: '初始化失败',
             errMsg: '请重新启动应用后再试。',
@@ -105,6 +93,7 @@ final indexModule = createModule(
       ..module(tabModule)
       ..module(videoModule)
       ..module(movieDetailModule)
+      ..module(officialModule)
       ..route(
         ImageViewer.routePath,
         child: (context, state) {
@@ -120,8 +109,6 @@ final indexModule = createModule(
         },
         transition: _imagePreviewTransition,
       )
-      ..module(infoModule)
-      ..module(settingsModule)
-      ..module(searchModule);
+      ..module(settingsModule);
   },
 );
