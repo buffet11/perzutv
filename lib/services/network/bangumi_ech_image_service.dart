@@ -3,9 +3,9 @@ import 'dart:io' show HttpClientResponseCompressionState;
 import 'package:ech_http/ech_http.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
-import 'package:kazutv/services/network/bangumi_ech_resolver.dart';
-import 'package:kazutv/services/network/image_file_response.dart';
-import 'package:kazutv/utils/constants.dart' show bangumiHTTPHeader;
+import 'package:perzutv/services/network/bangumi_ech_resolver.dart';
+import 'package:perzutv/services/network/image_file_response.dart';
+import 'package:perzutv/utils/constants.dart' show bangumiHTTPHeader;
 
 class BangumiEchImageService extends FileService {
   BangumiEchImageService({required Uri? Function(Uri) proxyForUrl})

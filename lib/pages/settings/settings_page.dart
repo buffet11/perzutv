@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'package:kazutv/bean/appbar/sys_app_bar.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/bean/widget/content_section.dart';
-import 'package:kazutv/pages/settings/player_settings.dart';
-import 'package:kazutv/utils/constants.dart';
+import 'package:perzutv/bean/appbar/sys_app_bar.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/bean/widget/content_section.dart';
+import 'package:perzutv/pages/settings/player_settings.dart';
+import 'package:perzutv/utils/constants.dart';
 
 class _SettingsCategory {
   const _SettingsCategory({
@@ -57,12 +57,6 @@ const List<_SettingsGroup> _settingsGroups = [
     title: '资源',
     categories: [
       _SettingsCategory(
-        label: '规则管理',
-        description: '番剧资源规则',
-        icon: Icons.extension_rounded,
-        path: '/settings/plugin',
-      ),
-      _SettingsCategory(
         label: '影视源',
         description: '影视采集源管理与导入导出',
         icon: Icons.movie_filter_rounded,
@@ -73,12 +67,6 @@ const List<_SettingsGroup> _settingsGroups = [
         description: '平台播放页的解析接口（自行填写）',
         icon: Icons.link_rounded,
         path: '/settings/parse-source',
-      ),
-      _SettingsCategory(
-        label: '下载设置',
-        description: '并发数与弹幕缓存',
-        icon: Icons.downloading_rounded,
-        path: '/settings/download-settings',
       ),
     ],
   ),
@@ -96,12 +84,6 @@ const List<_SettingsGroup> _settingsGroups = [
         description: '启动、窗口行为与展示信息',
         icon: Icons.pages_rounded,
         path: '/settings/interface',
-      ),
-      _SettingsCategory(
-        label: '同步设置',
-        description: '追番状态与多设备同步',
-        icon: Icons.cloud_rounded,
-        path: '/settings/sync',
       ),
       _SettingsCategory(
         label: '网络设置',
@@ -145,10 +127,6 @@ bool _isWithinPath(String location, String path) =>
 String _categoryPath(String location) {
   if (location == '/settings') {
     return '/settings/player';
-  }
-  if (_isWithinPath(location, '/settings/bangumi') ||
-      _isWithinPath(location, '/settings/webdav')) {
-    return '/settings/sync';
   }
   for (final group in _settingsGroups) {
     for (final category in group.categories) {

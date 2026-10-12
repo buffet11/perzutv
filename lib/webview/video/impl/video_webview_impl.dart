@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/network/proxy_utils.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/webview/video/video_webview_controller.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/network/proxy_utils.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/webview/video/video_webview_controller.dart';
 import 'package:flutter_inappwebview_platform_interface/flutter_inappwebview_platform_interface.dart';
 import 'package:flutter_inappwebview_android/flutter_inappwebview_android.dart'
     as android_webview;
-import 'package:kazutv/utils/media.dart';
-import 'package:kazutv/utils/http_headers.dart';
+import 'package:perzutv/utils/media.dart';
+import 'package:perzutv/utils/http_headers.dart';
 
 class VideoWebviewImpl
     extends VideoWebviewController<PlatformInAppWebViewController> {

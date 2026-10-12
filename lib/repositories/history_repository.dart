@@ -1,11 +1,11 @@
 import 'package:hive_ce/hive.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/constants.dart';
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
-import 'package:kazutv/modules/history/history_module.dart';
-import 'package:kazutv/services/sync/history_sync_service.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/storage/history_storage_coordinator.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/constants.dart';
+import 'package:perzutv/modules/bangumi/bangumi_item.dart';
+import 'package:perzutv/modules/history/history_module.dart';
+import 'package:perzutv/services/sync/history_sync_service.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/history_storage_coordinator.dart';
 
 typedef HistoryProgressSyncAppender = Future<void> Function({
   required History history,

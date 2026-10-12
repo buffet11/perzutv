@@ -3,7 +3,7 @@
 import 'dart:collection';
 import 'dart:typed_data';
 
-import 'package:kazutv/services/player/screenshot_candidate.dart';
+import 'package:perzutv/services/player/screenshot_candidate.dart';
 import 'package:mobx/mobx.dart';
 
 part 'player_screenshot_controller.g.dart';

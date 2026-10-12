@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'package:webdav_client/webdav_client.dart' as webdav;
 import 'package:path_provider/path_provider.dart';
-import 'package:kazutv/modules/history/history_sync.dart';
-import 'package:kazutv/modules/danmaku/danmaku_shield_sync.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/modules/collect/collect_module.dart';
-import 'package:kazutv/modules/collect/collect_change_module.dart';
-import 'package:kazutv/services/sync/history_sync_service.dart';
-import 'package:kazutv/services/sync/webdav_remote_file_commit.dart';
-import 'package:kazutv/utils/async_serial_queue.dart';
-import 'package:kazutv/utils/async_single_flight.dart';
+import 'package:perzutv/modules/history/history_sync.dart';
+import 'package:perzutv/modules/danmaku/danmaku_shield_sync.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/modules/collect/collect_module.dart';
+import 'package:perzutv/modules/collect/collect_change_module.dart';
+import 'package:perzutv/services/sync/history_sync_service.dart';
+import 'package:perzutv/services/sync/webdav_remote_file_commit.dart';
+import 'package:perzutv/utils/async_serial_queue.dart';
+import 'package:perzutv/utils/async_single_flight.dart';
 
 class WebDav {
   static const String _syncRootPath = '/kazumiSync';

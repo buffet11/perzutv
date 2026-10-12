@@ -3,13 +3,13 @@
 // Check in to version control
 
 import 'package:hive_ce/hive_ce.dart';
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
-import 'package:kazutv/modules/bangumi/bangumi_tag.dart';
-import 'package:kazutv/modules/collect/collect_change_module.dart';
-import 'package:kazutv/modules/collect/collect_module.dart';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/modules/history/history_module.dart';
-import 'package:kazutv/modules/search/search_history_module.dart';
+import 'package:perzutv/modules/bangumi/bangumi_item.dart';
+import 'package:perzutv/modules/bangumi/bangumi_tag.dart';
+import 'package:perzutv/modules/collect/collect_change_module.dart';
+import 'package:perzutv/modules/collect/collect_module.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/modules/history/history_module.dart';
+import 'package:perzutv/modules/search/search_history_module.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {

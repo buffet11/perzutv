@@ -6,10 +6,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:kazutv/pages/player/controller/player_screenshot_controller.dart';
-import 'package:kazutv/pages/player/player_screenshot_image.dart';
-import 'package:kazutv/services/player/screenshot_candidate.dart';
-import 'package:kazutv/services/player/screenshot_export_service.dart';
+import 'package:perzutv/pages/player/controller/player_screenshot_controller.dart';
+import 'package:perzutv/pages/player/player_screenshot_image.dart';
+import 'package:perzutv/services/player/screenshot_candidate.dart';
+import 'package:perzutv/services/player/screenshot_export_service.dart';
 
 Future<void> showPlayerScreenshotSheet(
   BuildContext context, {

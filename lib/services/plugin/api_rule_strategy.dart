@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:json_path/json_path.dart';
-import 'package:kazutv/modules/roads/road_module.dart';
-import 'package:kazutv/modules/search/plugin_search_module.dart';
-import 'package:kazutv/plugins/api_rule_config.dart';
-import 'package:kazutv/services/plugin/rule_engine_models.dart';
-import 'package:kazutv/utils/episode_url.dart';
+import 'package:perzutv/modules/roads/road_module.dart';
+import 'package:perzutv/modules/search/plugin_search_module.dart';
+import 'package:perzutv/plugins/api_rule_config.dart';
+import 'package:perzutv/services/plugin/rule_engine_models.dart';
+import 'package:perzutv/utils/episode_url.dart';
 
 class ApiRuleFormatException implements Exception {
   const ApiRuleFormatException(this.message);

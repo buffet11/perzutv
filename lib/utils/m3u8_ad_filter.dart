@@ -1,4 +1,4 @@
-import 'package:kazutv/utils/m3u8_parser.dart';
+import 'package:perzutv/utils/m3u8_parser.dart';
 
 class M3u8AdFilter {
   /// Filter ad segments from a media playlist.

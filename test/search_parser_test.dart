@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/utils/search_parser.dart';
+import 'package:perzutv/utils/search_parser.dart';
 
 void main() {
   group('SearchParser', () {

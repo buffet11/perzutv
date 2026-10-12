@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/request/apis/bangumi_api.dart';
-import 'package:kazutv/utils/search_parser.dart';
+import 'package:perzutv/request/apis/bangumi_api.dart';
+import 'package:perzutv/utils/search_parser.dart';
 
 void main() {
   group('BangumiApi.buildBangumiSearchParams', () {

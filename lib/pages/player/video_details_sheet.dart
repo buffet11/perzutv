@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-import 'package:kazutv/bean/dialog/adaptive_bottom_sheet.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/dialog/material_bottom_sheet.dart';
-import 'package:kazutv/bean/widget/connected_tabs.dart';
-import 'package:kazutv/bean/widget/content_section.dart';
-import 'package:kazutv/bean/widget/empty_state_widget.dart';
-import 'package:kazutv/bean/widget/tonal_card.dart';
-import 'package:kazutv/pages/player/player_controller.dart';
+import 'package:perzutv/bean/dialog/adaptive_bottom_sheet.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/dialog/material_bottom_sheet.dart';
+import 'package:perzutv/bean/widget/connected_tabs.dart';
+import 'package:perzutv/bean/widget/content_section.dart';
+import 'package:perzutv/bean/widget/empty_state_widget.dart';
+import 'package:perzutv/bean/widget/tonal_card.dart';
+import 'package:perzutv/pages/player/player_controller.dart';
 
 void showVideoDetailsSheet(
   BuildContext context, {

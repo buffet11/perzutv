@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/modules/movie/builtin_movie_sources.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
-import 'package:kazutv/pages/settings/movie/movie_source_edit_dialog.dart';
-import 'package:kazutv/services/movie/movie_source_manager.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/modules/movie/builtin_movie_sources.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
+import 'package:perzutv/pages/settings/movie/movie_source_edit_dialog.dart';
+import 'package:perzutv/services/movie/movie_source_manager.dart';
 
 /// 影视源管理。
 ///

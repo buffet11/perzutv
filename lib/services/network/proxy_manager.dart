@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:kazutv/request/core/dio_factory.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/network/proxy_aware_image_cache_manager.dart';
+import 'package:perzutv/request/core/dio_factory.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/network/proxy_aware_image_cache_manager.dart';
 
 // WebView proxies are configured separately by their platform controllers.
 class ProxyManager {

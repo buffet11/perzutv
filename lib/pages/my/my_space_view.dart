@@ -1,33 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/bean/widget/content_section.dart';
-import 'package:kazutv/bean/widget/state_presentation.dart';
-import 'package:kazutv/modules/my/watch_stats.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/bean/widget/content_section.dart';
+import 'package:perzutv/bean/widget/state_presentation.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
 
+/// 「我的」页里的可跳转目标。
+///
+/// 番剧相关的 规则设置 / 历史记录 / 离线下载 / 同步备份 四项已随番剧功能
+/// 一并移除，只剩影视动漫用得上的通用设置 + 观看记录。
 enum MyDestination {
   theme,
   player,
   danmaku,
-  rules,
-  history,
-  downloads,
-  sync,
+  records,
   storage,
   about,
 }
 
 const _tileRadius = BorderRadius.all(Radius.circular(28));
 
+/// 「观看记录」入口的副标题：影视与动漫分开显示条数。
+String _recordsCaption(int movieCount, int animeCount) {
+  if (movieCount == 0 && animeCount == 0) return '暂无观看记录';
+  return '影视 $movieCount · 动漫 $animeCount';
+}
+
 class MySpaceView extends StatelessWidget {
   const MySpaceView({
     super.key,
-    required this.stats,
+    required this.movieCount,
+    required this.animeCount,
     required this.onOpen,
   });
 
-  final WatchStats stats;
+  /// 影视观看记录条数。
+  final int movieCount;
+
+  /// 动漫观看记录条数。
+  final int animeCount;
+
   final ValueChanged<MyDestination> onOpen;
+
+  int get _total => movieCount + animeCount;
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +57,16 @@ class MySpaceView extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1120),
             child: wide
-                ? _WideSpaceLayout(stats: stats, onOpen: onOpen)
+                ? _WideSpaceLayout(
+                    historyCount: _total,
+                    movieCount: movieCount,
+                    animeCount: animeCount,
+                    onOpen: onOpen,
+                  )
                 : _CompactSpaceLayout(
-                    stats: stats,
+                    historyCount: _total,
+                    movieCount: movieCount,
+                    animeCount: animeCount,
                     onOpen: onOpen,
                     stackTools: width < 280 || largeText,
                   ),
@@ -57,9 +78,16 @@ class MySpaceView extends StatelessWidget {
 }
 
 class _WideSpaceLayout extends StatelessWidget {
-  const _WideSpaceLayout({required this.stats, required this.onOpen});
+  const _WideSpaceLayout({
+    required this.historyCount,
+    required this.movieCount,
+    required this.animeCount,
+    required this.onOpen,
+  });
 
-  final WatchStats stats;
+  final int historyCount;
+  final int movieCount;
+  final int animeCount;
   final ValueChanged<MyDestination> onOpen;
 
   @override
@@ -71,57 +99,29 @@ class _WideSpaceLayout extends StatelessWidget {
         _AdaptivePair(
           gap: 20,
           first: const _SpaceHeading(),
-          second: _WatchStatsPanel(
-            bangumiCount: stats.watchedBangumiCount,
-            episodeCount: stats.watchedEpisodeCount,
-          ),
+          second: _WatchStatsPanel(historyCount: historyCount),
         ),
         const SizedBox(height: 28),
         _AdaptivePair(
-          first: _RulesTile(onTap: () => onOpen(MyDestination.rules)),
-          second: _AdaptivePair(
-            first: _ToolTile(
-              icon: Icons.history_rounded,
-              title: '历史记录',
-              caption: stats.watchedBangumiCount == 0 ? '暂无观看记录' : '查看观看记录',
-              color: colors.secondaryContainer,
-              foreground: colors.onSecondaryContainer,
-              onTap: () => onOpen(MyDestination.history),
-            ),
-            second: _ToolTile(
-              icon: Icons.download_rounded,
-              title: '离线下载',
-              caption: stats.downloadTaskCount == 0
-                  ? '管理离线内容'
-                  : '${stats.downloadTaskCount} 集下载任务',
-              color: colors.tertiaryContainer,
-              foreground: colors.onTertiaryContainer,
-              onTap: () => onOpen(MyDestination.downloads),
-            ),
+          first: _ToolTile(
+            icon: Icons.history_rounded,
+            title: '观看记录',
+            caption: _recordsCaption(movieCount, animeCount),
+            color: colors.secondaryContainer,
+            foreground: colors.onSecondaryContainer,
+            onTap: () => onOpen(MyDestination.records),
+          ),
+          second: _ToolTile(
+            icon: Icons.cleaning_services_rounded,
+            title: '存储管理',
+            caption: '缓存与日志',
+            color: colors.surfaceContainer,
+            foreground: colors.onSurface,
+            onTap: () => onOpen(MyDestination.storage),
           ),
         ),
         const SizedBox(height: 12),
-        _AdaptivePair(
-          first: _PreferencesPanel(onOpen: onOpen),
-          second: _AdaptivePair(
-            first: _ToolTile(
-              icon: Icons.cloud_sync_rounded,
-              title: '同步备份',
-              caption: '跨设备同步数据',
-              color: colors.surfaceContainer,
-              foreground: colors.onSurface,
-              onTap: () => onOpen(MyDestination.sync),
-            ),
-            second: _ToolTile(
-              icon: Icons.cleaning_services_rounded,
-              title: '存储管理',
-              caption: '缓存与日志',
-              color: colors.surfaceContainer,
-              foreground: colors.onSurface,
-              onTap: () => onOpen(MyDestination.storage),
-            ),
-          ),
-        ),
+        _PreferencesPanel(onOpen: onOpen),
         const SizedBox(height: 24),
         Align(
           alignment: Alignment.center,
@@ -136,7 +136,7 @@ class _WideSpaceLayout extends StatelessWidget {
                 children: [
                   Icon(Icons.info_outline_rounded, size: 20),
                   SizedBox(width: 8),
-                  Flexible(child: Text('关于 Kazutv')),
+                  Flexible(child: Text('关于 Perzutv')),
                 ],
               ),
             ),
@@ -149,55 +149,31 @@ class _WideSpaceLayout extends StatelessWidget {
 
 class _CompactSpaceLayout extends StatelessWidget {
   const _CompactSpaceLayout({
-    required this.stats,
+    required this.historyCount,
+    required this.movieCount,
+    required this.animeCount,
     required this.onOpen,
     required this.stackTools,
   });
 
-  final WatchStats stats;
+  final int historyCount;
+  final int movieCount;
+  final int animeCount;
   final ValueChanged<MyDestination> onOpen;
   final bool stackTools;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _WatchStatsPanel(
-          bangumiCount: stats.watchedBangumiCount,
-          episodeCount: stats.watchedEpisodeCount,
-          compact: true,
-        ),
-        const SizedBox(height: 12),
-        _AdaptivePair(
-          stack: stackTools,
-          first: _ToolTile(
-            icon: Icons.history_rounded,
-            title: '历史记录',
-            caption: stats.watchedBangumiCount == 0 ? '暂无观看记录' : '查看观看记录',
-            color: colors.secondaryContainer,
-            foreground: colors.onSecondaryContainer,
-            compact: true,
-            onTap: () => onOpen(MyDestination.history),
-          ),
-          second: _ToolTile(
-            icon: Icons.download_rounded,
-            title: '离线下载',
-            caption: stats.downloadTaskCount == 0
-                ? '管理离线内容'
-                : '${stats.downloadTaskCount} 集下载任务',
-            color: colors.secondaryContainer,
-            foreground: colors.onSecondaryContainer,
-            compact: true,
-            onTap: () => onOpen(MyDestination.downloads),
-          ),
-        ),
+        _WatchStatsPanel(historyCount: historyCount, compact: true),
         const SizedBox(height: 24),
         ContentSection.group(
           title: '内容与偏好',
           children: [
-            _entry('规则设置', Icons.extension_rounded, MyDestination.rules),
+            _entry('观看记录', Icons.history_rounded, MyDestination.records,
+                caption: _recordsCaption(movieCount, animeCount)),
             _entry('外观设置', Icons.palette_rounded, MyDestination.theme),
             _entry('播放设置', Icons.play_circle_rounded, MyDestination.player),
             _entry('弹幕设置', Icons.subtitles_rounded, MyDestination.danmaku),
@@ -207,20 +183,25 @@ class _CompactSpaceLayout extends StatelessWidget {
         ContentSection.group(
           title: '数据与应用',
           children: [
-            _entry('同步备份', Icons.cloud_sync_rounded, MyDestination.sync),
             _entry(
                 '存储管理', Icons.cleaning_services_rounded, MyDestination.storage),
             _entry(
-                '关于 Kazutv', Icons.info_outline_rounded, MyDestination.about),
+                '关于 Perzutv', Icons.info_outline_rounded, MyDestination.about),
           ],
         ),
       ],
     );
   }
 
-  Widget _entry(String title, IconData icon, MyDestination destination) =>
+  Widget _entry(
+    String title,
+    IconData icon,
+    MyDestination destination, {
+    String? caption,
+  }) =>
       SettingsTile(
         title: Text(title),
+        description: caption == null ? null : Text(caption),
         leading: icon,
         trailing: const Icon(Icons.chevron_right_rounded, size: 20),
         onPressed: (_) => onOpen(destination),
@@ -228,14 +209,10 @@ class _CompactSpaceLayout extends StatelessWidget {
 }
 
 class _WatchStatsPanel extends StatelessWidget {
-  const _WatchStatsPanel({
-    required this.bangumiCount,
-    required this.episodeCount,
-    this.compact = false,
-  });
+  const _WatchStatsPanel({required this.historyCount, this.compact = false});
 
-  final int bangumiCount;
-  final int episodeCount;
+  /// 影视 / 动漫的观看记录条数。
+  final int historyCount;
   final bool compact;
 
   @override
@@ -275,7 +252,7 @@ class _WatchStatsPanel extends StatelessWidget {
                 ],
               )
             else
-              Text('观看统计',
+              Text('观看记录',
                   style: Theme.of(context)
                       .textTheme
                       .labelMedium
@@ -285,29 +262,8 @@ class _WatchStatsPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: _StatCount(
-                    value: bangumiCount,
-                    label: '看过番剧',
-                    foreground: compact ? colors.onPrimaryContainer : null,
-                  ),
-                ),
-                if (compact)
-                  SizedBox(
-                    height: 32,
-                    child: VerticalDivider(
-                      width: 24,
-                      color: colors.onPrimaryContainer.withValues(alpha: .16),
-                    ),
-                  )
-                else
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Icon(Icons.auto_awesome_rounded,
-                        color: colors.primary, size: 20),
-                  ),
-                Expanded(
-                  child: _StatCount(
-                    value: episodeCount,
-                    label: '观看集数',
+                    value: historyCount,
+                    label: '影视与动漫',
                     foreground: compact ? colors.onPrimaryContainer : null,
                   ),
                 ),
@@ -378,63 +334,6 @@ class _SpaceHeading extends StatelessWidget {
           foreground: colors.onTertiaryContainer,
         ),
       ],
-    );
-  }
-}
-
-class _RulesTile extends StatelessWidget {
-  const _RulesTile({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
-    return _ExpressiveAction(
-      color: colors.primary,
-      foreground: colors.onPrimary,
-      radius: const BorderRadius.only(
-        topLeft: Radius.circular(28),
-        topRight: Radius.circular(64),
-        bottomLeft: Radius.circular(28),
-        bottomRight: Radius.circular(28),
-      ),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('规则设置',
-                      style: text.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colors.onPrimary)),
-                  const SizedBox(height: 6),
-                  Text('管理番剧来源',
-                      style:
-                          text.bodyMedium?.copyWith(color: colors.onPrimary)),
-                  const SizedBox(height: 20),
-                  _ArrowCue(
-                      color: colors.onPrimary, foreground: colors.primary),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            _ShapeIcon(
-              shape: _SpaceShape.clover,
-              icon: Icons.extension_rounded,
-              size: 80,
-              color: colors.primaryContainer,
-              foreground: colors.onPrimaryContainer,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -621,24 +520,6 @@ class MySettingsButton extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ArrowCue extends StatelessWidget {
-  const _ArrowCue({required this.color, required this.foreground});
-
-  final Color color;
-  final Color foreground;
-
-  @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-        child: Container(
-          width: 52,
-          height: 32,
-          decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(20)),
-          child: Icon(Icons.arrow_forward_rounded, color: foreground, size: 20),
-        ),
-      );
 }
 
 enum _SpaceShape { sun, clover }

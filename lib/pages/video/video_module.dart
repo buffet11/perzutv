@@ -1,11 +1,11 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/pages/download/download_controller.dart';
-import 'package:kazutv/pages/history/history_controller.dart';
-import 'package:kazutv/pages/player/player_controller.dart';
-import 'package:kazutv/pages/route_error_page.dart';
-import 'package:kazutv/pages/video/video_controller.dart';
-import 'package:kazutv/pages/video/video_page.dart';
-import 'package:kazutv/pages/video/video_playback_args.dart';
+import 'package:perzutv/pages/download/download_controller.dart';
+import 'package:perzutv/pages/history/history_controller.dart';
+import 'package:perzutv/pages/player/player_controller.dart';
+import 'package:perzutv/pages/route_error_page.dart';
+import 'package:perzutv/pages/video/video_controller.dart';
+import 'package:perzutv/pages/video/video_page.dart';
+import 'package:perzutv/pages/video/video_playback_args.dart';
 
 final videoModule = createModule(
   path: '/video',

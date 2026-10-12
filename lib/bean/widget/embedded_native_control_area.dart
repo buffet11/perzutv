@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:kazutv/services/platform/desktop_window_config.dart';
+import 'package:perzutv/services/platform/desktop_window_config.dart';
 
 /// Reserves space above content for native macOS window controls.
 class EmbeddedNativeControlArea extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'package:kazutv/bean/dialog/material_bottom_sheet.dart';
-import 'package:kazutv/pages/my/my_controller.dart';
-import 'package:kazutv/pages/settings/danmaku/danmaku_shield_editor.dart';
+import 'package:perzutv/bean/dialog/material_bottom_sheet.dart';
+import 'package:perzutv/pages/my/my_controller.dart';
+import 'package:perzutv/pages/settings/danmaku/danmaku_shield_editor.dart';
 
 class DanmakuShieldSettingsSheet extends StatelessWidget {
   const DanmakuShieldSettingsSheet({super.key});

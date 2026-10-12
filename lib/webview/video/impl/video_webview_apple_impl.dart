@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/webview/video/video_webview_controller.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/webview/video/video_webview_controller.dart';
 import 'package:flutter_inappwebview_platform_interface/flutter_inappwebview_platform_interface.dart';
-import 'package:kazutv/utils/http_headers.dart';
-import 'package:kazutv/utils/media.dart';
+import 'package:perzutv/utils/http_headers.dart';
+import 'package:perzutv/utils/media.dart';
 
 class VideoWebviewAppleImpl
     extends VideoWebviewController<PlatformInAppWebViewController> {

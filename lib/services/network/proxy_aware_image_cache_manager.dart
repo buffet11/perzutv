@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/io_client.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/network/bangumi_ech_image_service.dart';
-import 'package:kazutv/services/network/image_acceleration.dart';
-import 'package:kazutv/services/network/image_file_service.dart';
-import 'package:kazutv/services/network/proxy_utils.dart';
-import 'package:kazutv/services/network/system_proxy_service.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/network/bangumi_ech_image_service.dart';
+import 'package:perzutv/services/network/image_acceleration.dart';
+import 'package:perzutv/services/network/image_file_service.dart';
+import 'package:perzutv/services/network/proxy_utils.dart';
+import 'package:perzutv/services/network/system_proxy_service.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 class ProxyAwareImageCacheManager extends CacheManager with ImageCacheManager {
   static final ProxyAwareImageCacheManager instance =

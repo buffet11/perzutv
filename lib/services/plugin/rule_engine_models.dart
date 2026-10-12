@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:kazutv/modules/roads/road_module.dart';
-import 'package:kazutv/modules/search/plugin_search_module.dart';
-import 'package:kazutv/plugins/anti_crawler_config.dart';
-import 'package:kazutv/plugins/api_rule_config.dart';
+import 'package:perzutv/modules/roads/road_module.dart';
+import 'package:perzutv/modules/search/plugin_search_module.dart';
+import 'package:perzutv/plugins/anti_crawler_config.dart';
+import 'package:perzutv/plugins/api_rule_config.dart';
 
 typedef RuleCancelToken = CancelToken;
 

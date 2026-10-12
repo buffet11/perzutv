@@ -13,9 +13,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:kazutv/modules/movie/builtin_movie_sources.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
-import 'package:kazutv/request/apis/apple_cms_api.dart';
+import 'package:perzutv/modules/movie/builtin_movie_sources.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
+import 'package:perzutv/request/apis/apple_cms_api.dart';
 
 const _ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
     '(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';

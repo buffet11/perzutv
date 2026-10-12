@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/pages/onboarding/onboarding_step_layout.dart';
+import 'package:perzutv/pages/onboarding/onboarding_step_layout.dart';
 
 class UpdateSourceStep extends StatelessWidget {
   const UpdateSourceStep({
@@ -18,7 +18,7 @@ class UpdateSourceStep extends StatelessWidget {
           shape: OnboardingIconShape.cookie,
         ),
         title: '以你的方式更新',
-        subtitle: '选择适合你的更新来源，让 Kazutv 保持最新。',
+        subtitle: '选择适合你的更新来源，让 Perzutv 保持最新。',
         child: RadioGroup<bool>(
           groupValue: useGithubUpdate,
           onChanged: (value) {

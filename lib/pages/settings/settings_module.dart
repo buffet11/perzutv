@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/pages/about/about_module.dart';
-import 'package:kazutv/pages/download/download_page_module.dart';
-import 'package:kazutv/pages/history/history_module.dart';
-import 'package:kazutv/pages/logs/logs_page.dart';
-import 'package:kazutv/pages/plugin_editor/plugin_module.dart';
-import 'package:kazutv/pages/settings/danmaku/danmaku_module.dart';
-import 'package:kazutv/pages/settings/decoder_settings.dart';
-import 'package:kazutv/pages/settings/displaymode_settings.dart';
-import 'package:kazutv/pages/settings/download_settings.dart';
-import 'package:kazutv/pages/settings/interface_settings.dart';
-import 'package:kazutv/pages/settings/keyboard_settings.dart';
-import 'package:kazutv/pages/settings/movie/movie_source_settings.dart';
-import 'package:kazutv/pages/settings/movie/parse_source_settings.dart';
-import 'package:kazutv/pages/settings/player_settings.dart';
-import 'package:kazutv/pages/settings/proxy/proxy_module.dart';
-import 'package:kazutv/pages/settings/renderer_settings.dart';
-import 'package:kazutv/pages/settings/settings_page.dart';
-import 'package:kazutv/pages/settings/storage_settings.dart';
-import 'package:kazutv/pages/settings/super_resolution_settings.dart';
-import 'package:kazutv/pages/settings/sync/bangumi_sync_page.dart';
-import 'package:kazutv/pages/settings/sync/sync_settings_page.dart';
-import 'package:kazutv/pages/settings/sync/webdav_server_page.dart';
-import 'package:kazutv/pages/settings/sync/webdav_sync_page.dart';
-import 'package:kazutv/pages/settings/theme_settings_page.dart';
-import 'package:kazutv/pages/settings/update_settings.dart';
-import 'package:kazutv/request/config/api_endpoints.dart';
-import 'package:kazutv/services/sync/danmaku_shield_sync_service.dart';
+import 'package:perzutv/pages/about/about_module.dart';
+import 'package:perzutv/pages/logs/logs_page.dart';
+import 'package:perzutv/pages/settings/danmaku/danmaku_module.dart';
+import 'package:perzutv/pages/settings/decoder_settings.dart';
+import 'package:perzutv/pages/settings/displaymode_settings.dart';
+import 'package:perzutv/pages/settings/interface_settings.dart';
+import 'package:perzutv/pages/settings/keyboard_settings.dart';
+import 'package:perzutv/pages/settings/movie/movie_source_settings.dart';
+import 'package:perzutv/pages/settings/movie/parse_source_settings.dart';
+import 'package:perzutv/pages/settings/player_settings.dart';
+import 'package:perzutv/pages/settings/proxy/proxy_module.dart';
+import 'package:perzutv/pages/settings/renderer_settings.dart';
+import 'package:perzutv/pages/settings/settings_page.dart';
+import 'package:perzutv/pages/settings/storage_settings.dart';
+import 'package:perzutv/pages/settings/super_resolution_settings.dart';
+import 'package:perzutv/pages/settings/theme_settings_page.dart';
+import 'package:perzutv/pages/settings/update_settings.dart';
+import 'package:perzutv/pages/settings/watch_records_page.dart';
+import 'package:perzutv/request/config/api_endpoints.dart';
 
 final settingsModule = createModule(
   path: '/settings',
@@ -37,15 +29,6 @@ final settingsModule = createModule(
       children: (sub) {
         sub
           ..route('/', child: (context, state) => const SettingsIndexPage())
-          ..route('/sync', child: (context, state) => const SyncSettingsPage())
-          ..route('/bangumi/',
-              child: (context, state) => const BangumiSyncPage())
-          ..route('/webdav/',
-              child: (context, state) => WebDavSyncPage(
-                    danmakuShieldSync: inject<DanmakuShieldSyncService>(),
-                  ))
-          ..route('/webdav/editor',
-              child: (context, state) => const WebDavServerPage())
           ..route(
             '/update',
             child: (context, state) => const UpdateSettingsPage(),
@@ -58,8 +41,14 @@ final settingsModule = createModule(
             '/parse-source',
             child: (context, state) => const ParseSourceSettingsPage(),
           )
-          ..route('/storage',
-              child: (context, state) => const StorageSettingsPage())
+          ..route(
+            '/storage',
+            child: (context, state) => const StorageSettingsPage(),
+          )
+          ..route(
+            '/records',
+            child: (context, state) => const WatchRecordsPage(),
+          )
           ..route('/storage/logs', child: (context, state) => const LogsPage())
           ..route('/theme',
               child: (context, state) => const ThemeSettingsPage())
@@ -91,12 +80,7 @@ final settingsModule = createModule(
             child: (context, state) => const SuperResolutionSettings(),
           )
           ..module(aboutModule)
-          ..module(pluginModule)
-          ..module(danmakuModule)
-          ..route(
-            '/download-settings',
-            child: (context, state) => const DownloadSettingsPage(),
-          );
+          ..module(danmakuModule);
       },
     );
     c
@@ -104,12 +88,10 @@ final settingsModule = createModule(
       ..route(
         '/about/license',
         child: (context, state) => const LicensePage(
-          applicationName: 'Kazutv',
+          applicationName: 'Perzutv',
           applicationVersion: ApiEndpoints.version,
-          applicationLegalese: 'Kazutv · GNU General Public License v3.0',
+          applicationLegalese: 'Perzutv · GNU General Public License v3.0',
         ),
-      )
-      ..module(historyModule)
-      ..module(downloadModule);
+      );
   },
 );

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:kazutv/modules/movie/parse_source.dart';
-import 'package:kazutv/request/core/dio_factory.dart';
-import 'package:kazutv/services/movie/movie_stream_parsing.dart';
+import 'package:perzutv/modules/movie/parse_source.dart';
+import 'package:perzutv/request/core/dio_factory.dart';
+import 'package:perzutv/services/movie/movie_stream_parsing.dart';
 
 /// 解析出的播放地址。
 class ParsedStream {

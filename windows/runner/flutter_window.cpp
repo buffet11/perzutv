@@ -168,7 +168,7 @@ void FlutterWindow::RegisterShortcutChannel() {
       return;
     }
 
-    bool success = ShortcutUtils::CreateDesktopShortcut(L"Kazutv", L"Kazutv - Anime & Movie Player");
+    bool success = ShortcutUtils::CreateDesktopShortcut(L"Perzutv", L"Perzutv - Anime & Movie Player");
     if (success) {
       result->Success(flutter::EncodableValue(true));
     } else {

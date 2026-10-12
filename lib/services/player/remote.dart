@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:dlna_dart/dlna.dart';
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/services/logging/logger.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/services/logging/logger.dart';
 
 class RemotePlay {
   Future<void> castVideo(String video, String referer) async {

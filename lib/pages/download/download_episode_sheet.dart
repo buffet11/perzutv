@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
 
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/dialog/material_bottom_sheet.dart';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/modules/roads/road_module.dart';
-import 'package:kazutv/pages/download/download_controller.dart';
-import 'package:kazutv/pages/video/video_controller.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/dialog/material_bottom_sheet.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/modules/roads/road_module.dart';
+import 'package:perzutv/pages/download/download_controller.dart';
+import 'package:perzutv/pages/video/video_controller.dart';
 
 class DownloadEpisodeSheet extends StatefulWidget {
   final int road;

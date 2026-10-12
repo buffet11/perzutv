@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/utils/async_rate_limiter.dart';
+import 'package:perzutv/utils/async_rate_limiter.dart';
 
 void main() {
   group('AsyncRateLimiter', () {

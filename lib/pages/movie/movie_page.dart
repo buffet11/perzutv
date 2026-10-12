@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'package:kazutv/bean/appbar/sys_app_bar.dart';
-import 'package:kazutv/bean/widget/empty_state_widget.dart';
-import 'package:kazutv/bean/widget/loading_indicator.dart';
-import 'package:kazutv/modules/movie/movie_item.dart';
-import 'package:kazutv/pages/movie/movie_controller.dart';
-import 'package:kazutv/pages/movie/movie_result_grid.dart';
-import 'package:kazutv/pages/movie/movie_source_chips.dart';
+import 'package:perzutv/bean/appbar/sys_app_bar.dart';
+import 'package:perzutv/bean/card/network_img_layer.dart';
+import 'package:perzutv/bean/widget/empty_state_widget.dart';
+import 'package:perzutv/bean/widget/loading_indicator.dart';
+import 'package:perzutv/modules/movie/movie_history.dart';
+import 'package:perzutv/modules/movie/movie_item.dart';
+import 'package:perzutv/pages/movie/movie_controller.dart';
+import 'package:perzutv/pages/movie/movie_result_grid.dart';
+import 'package:perzutv/pages/movie/movie_source_chips.dart';
 
 /// 影视 Tab：搜索框 + 搜索历史 + 结果网格。
 ///
@@ -26,7 +28,17 @@ class _MoviePageState extends State<MoviePage> {
   final _input = TextEditingController();
   final _focus = FocusNode();
 
+  /// 「继续观看」横向卡片的固定高度：封面 160 + 片名两行 + 源名 + 间距。
+  static const double _watchCardHeight = 236;
+
   MovieController get _controller => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // 首次进入先读一次观看历史，初始态才能显示「继续观看」。
+    _controller.loadWatchHistory();
+  }
 
   @override
   void dispose() {
@@ -51,8 +63,17 @@ class _MoviePageState extends State<MoviePage> {
     await _controller.search(kw);
   }
 
-  void _openDetail(MovieSearchItem item) {
-    context.pushNamed('/movie-detail/', arguments: item);
+  /// 进入详情页；等它（以及叠在上面的播放页）整体返回后再刷新观看历史。
+  ///
+  /// 用「await push 的 Future」而不是 RouteObserver：影视 Tab 的页面挂在
+  /// `RouterOutlet` 的**嵌套** Navigator 上，而源码里那个 rootRouteObserver
+  /// 只跟踪根 Navigator —— 详情页是推到根上的，嵌套页签收不到 `didPopNext`。
+  /// 等 push 返回是唯一不依赖导航层级、又最简单的做法。
+  Future<void> _openDetail(MovieSearchItem item) async {
+    await context.pushNamed('/movie-detail/', arguments: item);
+    if (!mounted) return;
+    // 刚看完一集回来，进度/新记录都可能变了，「继续观看」要立刻反映出来。
+    await _controller.loadWatchHistory();
   }
 
   @override
@@ -246,11 +267,15 @@ class _MoviePageState extends State<MoviePage> {
     return MovieResultGrid(items: items, onTap: _openDetail);
   }
 
-  /// 还没搜过：给搜索历史（比一片空白有用得多）
+  /// 还没搜过时的首页：观看历史（继续观看）+ 搜索历史。
+  ///
+  /// 两样都为空才显示空状态 —— 只要有「看过的片子」就先把它们列出来，
+  /// 用户不必再手动搜一遍。
   Widget _initialState(BuildContext context) {
-    final theme = Theme.of(context);
+    final watch = _controller.watchHistory;
     final history = _controller.history;
-    if (history.isEmpty) {
+
+    if (watch.isEmpty && history.isEmpty) {
       return const GeneralEmptyState(
         icon: Icons.movie_outlined,
         title: '搜一部电影试试\n聚合了多个影视源，同一个片子可以换源播放。',
@@ -262,36 +287,207 @@ class _MoviePageState extends State<MoviePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                '搜索历史',
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: _controller.clearHistory,
-                child: const Text('清空'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final kw in history)
-                ActionChip(
-                  label: Text(kw),
-                  onPressed: () {
-                    _input.text = kw;
-                    _submit(kw);
-                  },
-                ),
-            ],
-          ),
+          if (watch.isNotEmpty) _continueWatching(context, watch),
+          if (watch.isNotEmpty && history.isNotEmpty) const SizedBox(height: 24),
+          if (history.isNotEmpty) _searchHistory(context, history),
         ],
+      ),
+    );
+  }
+
+  /// 「继续观看」：横向卡片列表。
+  ///
+  /// 用横向 ListView（固定高度）而不是把 MovieResultGrid 塞进来 —— 后者内部
+  /// 是纵向 GridView，套在外层 SingleChildScrollView 里会变成嵌套纵向滚动。
+  /// 横向滚动与纵向互不干扰，窄窗口下也能正常滑。
+  Widget _continueWatching(BuildContext context, List<MoviePlayProgress> list) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '继续观看',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${list.length}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: _watchCardHeight,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: list.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final progress = list[index];
+              final item = _controller.toSearchItem(progress);
+              return _WatchHistoryCard(
+                item: item,
+                progressLabel: _progressText(progress),
+                onTap: () => _openDetail(item),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 搜索历史 chips：点击回填搜索、单删、清空。
+  Widget _searchHistory(BuildContext context, List<String> history) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '搜索历史',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            TextButton(
+              onPressed: _controller.clearHistory,
+              child: const Text('清空'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final kw in history)
+              // 用 InputChip 而不是 ActionChip：ActionChip 没有 onDeleted，
+              // 单删能力只有 Chip / InputChip 支持（且 InputChip 同样可点）。
+              InputChip(
+                label: Text(kw),
+                onPressed: () {
+                  _input.text = kw;
+                  _submit(kw);
+                },
+                onDeleted: () => _controller.removeHistory(kw),
+                deleteIcon: const Icon(Icons.close, size: 16),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// 进度文案：基本播到结尾算「已看完」，否则显示「看到 mm:ss / h:mm:ss」。
+  ///
+  /// 「已看完」的门槛与 [MoviePlayProgress.resumable] 的尾部判定一致（距结尾 30s 内）。
+  String _progressText(MoviePlayProgress progress) {
+    if (progress.durationSeconds > 0 &&
+        progress.positionSeconds >= progress.durationSeconds - 30) {
+      return '已看完';
+    }
+    return '看到 ${progress.positionLabel}';
+  }
+}
+
+/// 「继续观看」横向卡片：封面 + 片名 + 进度标签 + 来源源名。
+class _WatchHistoryCard extends StatelessWidget {
+  const _WatchHistoryCard({
+    required this.item,
+    required this.progressLabel,
+    required this.onTap,
+  });
+
+  final MovieSearchItem item;
+  final String progressLabel;
+  final VoidCallback onTap;
+
+  static const double _width = 120;
+  static const double _coverHeight = 160;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    const radius = BorderRadius.all(Radius.circular(10));
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        width: _width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                // 传真实尺寸：NetworkImgLayer 会按 (尺寸 * dpr) 算解码缓存，
+                // double.infinity 会抛 UnsupportedError（同 MovieResultGrid）。
+                NetworkImgLayer(
+                  src: item.pic,
+                  width: _width,
+                  height: _coverHeight,
+                  fit: BoxFit.cover,
+                  borderRadius: radius,
+                ),
+                // 进度标签压在封面底部，一眼看出看到哪了
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: colorScheme.scrim.withValues(alpha: 0.72),
+                      borderRadius: const BorderRadius.vertical(
+                        bottom: Radius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      progressLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        height: 1.2,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onInverseSurface,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              item.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              item.sourceName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

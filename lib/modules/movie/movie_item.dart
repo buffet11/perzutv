@@ -1,3 +1,5 @@
+import 'package:perzutv/modules/movie/movie_origin.dart';
+
 /// 跨源聚合后的统一搜索结果条目。
 ///
 /// 苹果CMS 的 `vod_*` 字段全是字符串（包括评分和年份），这里原样保留成 String，
@@ -30,6 +32,12 @@ class MovieSearchItem {
 
   final bool isAdult;
 
+  /// 从哪个模块点进来的（[MovieOrigin.movie] / [MovieOrigin.anime]）。
+  ///
+  /// 搜索结果本身不带这个信息，是**入口页**赋的（动漫页会把条目标成 anime），
+  /// 一路带到播放页，最终决定这条观看记录归到哪个列表。
+  final String origin;
+
   const MovieSearchItem({
     required this.sourceKey,
     required this.sourceName,
@@ -42,10 +50,27 @@ class MovieSearchItem {
     this.remarks = '',
     this.score = '',
     this.isAdult = false,
+    this.origin = MovieOrigin.movie,
   });
 
   /// 全局唯一键：同一个影片在不同源里是不同条目
   String get uniqueKey => '$sourceKey:$vodId';
+
+  /// 只重新标记来源模块（其余字段原样保留）。
+  MovieSearchItem copyWith({String? origin}) => MovieSearchItem(
+        sourceKey: sourceKey,
+        sourceName: sourceName,
+        vodId: vodId,
+        name: name,
+        pic: pic,
+        typeName: typeName,
+        year: year,
+        area: area,
+        remarks: remarks,
+        score: score,
+        isAdult: isAdult,
+        origin: origin ?? this.origin,
+      );
 
   /// 评分解析失败返回 null（源站常有「8.3 分」这类脏数据）
   double? get scoreValue {
@@ -73,6 +98,7 @@ class MovieSearchItem {
         'remarks': remarks,
         'score': score,
         'isAdult': isAdult,
+        'origin': origin,
       };
 
   factory MovieSearchItem.fromJson(Map<String, dynamic> json) => MovieSearchItem(
@@ -87,6 +113,7 @@ class MovieSearchItem {
         remarks: json['remarks'] as String? ?? '',
         score: json['score'] as String? ?? '',
         isAdult: json['isAdult'] == true,
+        origin: MovieOrigin.resolve(json['origin']),
       );
 
   @override

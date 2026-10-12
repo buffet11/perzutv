@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-import 'package:kazutv/bean/dialog/adaptive_bottom_sheet.dart';
-import 'package:kazutv/bean/dialog/material_bottom_sheet.dart';
-import 'package:kazutv/bean/widget/loading_indicator.dart';
-import 'package:kazutv/bean/widget/split_list_row.dart';
-import 'package:kazutv/bean/widget/tonal_card.dart';
-import 'package:kazutv/pages/player/player_controller.dart';
-import 'package:kazutv/services/player/syncplay_endpoint.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/device.dart';
+import 'package:perzutv/bean/dialog/adaptive_bottom_sheet.dart';
+import 'package:perzutv/bean/dialog/material_bottom_sheet.dart';
+import 'package:perzutv/bean/widget/loading_indicator.dart';
+import 'package:perzutv/bean/widget/split_list_row.dart';
+import 'package:perzutv/bean/widget/tonal_card.dart';
+import 'package:perzutv/pages/player/player_controller.dart';
+import 'package:perzutv/services/player/syncplay_endpoint.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/device.dart';
 
 // Close each step before opening the next to avoid stacked modal routes.
 enum _SyncPlayDestination { create, join, server }

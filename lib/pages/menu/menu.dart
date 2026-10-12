@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter/services.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/widget/embedded_native_control_area.dart';
-import 'package:kazutv/navigation.dart';
-import 'package:kazutv/pages/menu/route_visibility.dart';
-import 'package:kazutv/pages/router.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/widget/embedded_native_control_area.dart';
+import 'package:perzutv/navigation.dart';
+import 'package:perzutv/pages/menu/route_visibility.dart';
+import 'package:perzutv/pages/router.dart';
 
 class ScaffoldMenu extends StatefulWidget {
   const ScaffoldMenu({super.key, required this.location});
@@ -142,19 +142,9 @@ class _ScaffoldMenu extends State<ScaffoldMenu> with RouteAware {
       bottomNavigationBar: NavigationBar(
         destinations: const <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
-            label: '推荐',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.timeline),
-            icon: Icon(Icons.timeline_outlined),
-            label: '时间表',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.favorite),
-            icon: Icon(Icons.favorite_outlined),
-            label: '追番',
+            selectedIcon: Icon(Icons.animation_outlined),
+            icon: Icon(Icons.animation),
+            label: '动漫',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.movie),
@@ -186,28 +176,14 @@ class _ScaffoldMenu extends State<ScaffoldMenu> with RouteAware {
             child: NavigationRail(
               backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
               groupAlignment: 1,
-              leading: FloatingActionButton(
-                elevation: 0,
-                heroTag: null,
-                onPressed: () => context.pushNamed('/search/'),
-                child: const Icon(Icons.search),
-              ),
+              // 原来这里的搜索按钮进的是番剧搜索页，番剧功能已整体移除，
+              // 影视/动漫都有自己的入口（影视搜索框、动漫分区条），故去掉。
               labelType: NavigationRailLabelType.selected,
               destinations: const <NavigationRailDestination>[
                 NavigationRailDestination(
-                  selectedIcon: Icon(Icons.home),
-                  icon: Icon(Icons.home_outlined),
-                  label: Text('推荐'),
-                ),
-                NavigationRailDestination(
-                  selectedIcon: Icon(Icons.timeline),
-                  icon: Icon(Icons.timeline_outlined),
-                  label: Text('时间表'),
-                ),
-                NavigationRailDestination(
-                  selectedIcon: Icon(Icons.favorite),
-                  icon: Icon(Icons.favorite_border),
-                  label: Text('追番'),
+                  selectedIcon: Icon(Icons.animation_outlined),
+                  icon: Icon(Icons.animation),
+                  label: Text('动漫'),
                 ),
                 NavigationRailDestination(
                   selectedIcon: Icon(Icons.movie),

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';
 
 /// Keeps the user-picked download directory writable across app restarts on

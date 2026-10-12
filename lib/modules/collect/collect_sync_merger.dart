@@ -1,8 +1,8 @@
-import 'package:kazutv/modules/bangumi/bangumi_collection.dart';
-import 'package:kazutv/modules/bangumi/sync_priority.dart';
-import 'package:kazutv/modules/collect/collect_change_module.dart';
-import 'package:kazutv/modules/collect/collect_module.dart';
-import 'package:kazutv/modules/collect/collect_type_mapper.dart';
+import 'package:perzutv/modules/bangumi/bangumi_collection.dart';
+import 'package:perzutv/modules/bangumi/sync_priority.dart';
+import 'package:perzutv/modules/collect/collect_change_module.dart';
+import 'package:perzutv/modules/collect/collect_module.dart';
+import 'package:perzutv/modules/collect/collect_type_mapper.dart';
 
 class CollectiblesMergeResult {
   const CollectiblesMergeResult({

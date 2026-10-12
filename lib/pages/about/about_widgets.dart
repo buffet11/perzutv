@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/widget/split_list_row.dart';
-import 'package:kazutv/bean/widget/state_presentation.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/widget/split_list_row.dart';
+import 'package:perzutv/bean/widget/state_presentation.dart';
 
 void _showMessage(BuildContext context, String message) {
   KazumiDialog.showToast(context: context, message: message);

@@ -167,7 +167,7 @@ def main():
         hits = sum(1 for t in TITLES if r["per_title"].get(t, (0, 0))[0] >= 1080)
         print(f"  {r['name']:<10} 最高 {r['max_height']}p   在 {hits}/{len(TITLES)} 部片中达到 1080p")
 
-    with open("F:/WB-project/kazutv/_hq_probe2.json", "w", encoding="utf-8") as f:
+    with open("F:/WB-project/perzutv/_hq_probe2.json", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print("\n明细已写入 _hq_probe2.json")
 

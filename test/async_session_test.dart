@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/utils/async_session.dart';
+import 'package:perzutv/utils/async_session.dart';
 
 void main() {
   group('AsyncSessionOwner', () {

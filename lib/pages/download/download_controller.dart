@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/modules/danmaku/danmaku_module.dart';
-import 'package:kazutv/plugins/plugins.dart';
-import 'package:kazutv/plugins/plugins_controller.dart';
-import 'package:kazutv/repositories/download_repository.dart';
-import 'package:kazutv/services/download/background_download_service.dart';
-import 'package:kazutv/services/download/download_manager.dart';
-import 'package:kazutv/utils/format.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/video_source/services.dart';
-import 'package:kazutv/request/apis/danmaku_api.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/modules/danmaku/danmaku_module.dart';
+import 'package:perzutv/plugins/plugins.dart';
+import 'package:perzutv/plugins/plugins_controller.dart';
+import 'package:perzutv/repositories/download_repository.dart';
+import 'package:perzutv/services/download/background_download_service.dart';
+import 'package:perzutv/services/download/download_manager.dart';
+import 'package:perzutv/utils/format.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/video_source/services.dart';
+import 'package:perzutv/request/apis/danmaku_api.dart';
 import 'package:mobx/mobx.dart';
 
 part 'download_controller.g.dart';
@@ -706,9 +706,12 @@ abstract class _DownloadController with Store {
         KazumiLogger().i(
             'DownloadController: fetching danmaku for episode $episodeNumber (async)');
 
-        // 获取 DanDan 番剧 ID
-        final danDanBangumiID =
-            await DanmakuApi.getDanDanBangumiIDByBgmBangumiID(bangumiId);
+        // 获取 DanDan 番剧 ID（自定义弹幕 API 时按标题匹配）
+        final record = _repository.getRecord(recordKey);
+        final danDanBangumiID = await DanmakuApi.resolveDanDanBangumiID(
+          bgmBangumiID: bangumiId,
+          title: record?.bangumiName ?? '',
+        );
         if (danDanBangumiID == 0) {
           KazumiLogger().w(
               'DownloadController: failed to get DanDan bangumiID for $bangumiId');

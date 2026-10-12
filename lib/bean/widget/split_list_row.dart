@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:kazutv/bean/widget/tonal_card.dart';
+import 'package:perzutv/bean/widget/tonal_card.dart';
 
 const double splitListOuterRadius = tonalCardRadius;
 const double splitListInnerRadius = 4;

@@ -1,6 +1,6 @@
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/services/logging/logger.dart';
 
 abstract class IDownloadRepository {
   /// Emits when a record or an episode status is persisted. Progress ticks stay

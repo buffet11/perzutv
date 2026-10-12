@@ -1,5 +1,5 @@
-import 'package:kazutv/modules/bangumi/bangumi_collection_type.dart';
-import 'package:kazutv/modules/collect/collect_type.dart';
+import 'package:perzutv/modules/bangumi/bangumi_collection_type.dart';
+import 'package:perzutv/modules/collect/collect_type.dart';
 
 /// Converting [BangumiCollectionType] to local [CollectType].
 extension BangumiCollectionTypeMapper on BangumiCollectionType {

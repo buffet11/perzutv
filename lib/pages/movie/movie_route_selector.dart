@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/modules/movie/movie_detail.dart';
+import 'package:perzutv/modules/movie/movie_detail.dart';
 
 /// 线路选择器。
 ///

@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/request/clients/download_http_client.dart';
-import 'package:kazutv/request/core/network_exception.dart';
-import 'package:kazutv/utils/m3u8_parser.dart';
-import 'package:kazutv/utils/m3u8_ad_filter.dart';
-import 'package:kazutv/utils/format.dart' as fmt;
-import 'package:kazutv/utils/file_system.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/platform/secure_bookmark_service.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/request/clients/download_http_client.dart';
+import 'package:perzutv/request/core/network_exception.dart';
+import 'package:perzutv/utils/m3u8_parser.dart';
+import 'package:perzutv/utils/m3u8_ad_filter.dart';
+import 'package:perzutv/utils/format.dart' as fmt;
+import 'package:perzutv/utils/file_system.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/platform/secure_bookmark_service.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:path/path.dart' as path;
 
 class _NotM3u8Exception implements Exception {

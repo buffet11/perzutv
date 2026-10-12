@@ -1,8 +1,9 @@
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/modules/movie/movie_detail.dart';
-import 'package:kazutv/modules/roads/road_module.dart';
-import 'package:kazutv/plugins/plugins.dart';
+import 'package:perzutv/modules/bangumi/bangumi_item.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/modules/movie/movie_detail.dart';
+import 'package:perzutv/modules/movie/movie_origin.dart';
+import 'package:perzutv/modules/roads/road_module.dart';
+import 'package:perzutv/plugins/plugins.dart';
 
 /// Route arguments for '/video/'. Entry points hand playback context over
 /// through the route instead of pre-filling a shared controller, which lets
@@ -71,6 +72,7 @@ class MovieVideoPlaybackArgs extends VideoPlaybackArgs {
     this.coverUrl = '',
     this.year = '',
     this.startOffsetSeconds = 0,
+    this.origin = MovieOrigin.movie,
   });
 
   /// 来源源 key —— 与 [vodId] 一起作为播放进度的身份
@@ -107,6 +109,12 @@ class MovieVideoPlaybackArgs extends VideoPlaybackArgs {
 
   /// 从第几秒开始播（续播用）。0 表示从头开始。
   final int startOffsetSeconds;
+
+  /// 从哪个模块进来的（[MovieOrigin.movie] / [MovieOrigin.anime]）。
+  ///
+  /// 只影响写进观看记录时的归类 —— 动漫与影视共用这条播放链路，
+  /// 没有它「我的 → 观看记录」就没法分成两个列表。
+  final String origin;
 
   @override
   String toString() =>

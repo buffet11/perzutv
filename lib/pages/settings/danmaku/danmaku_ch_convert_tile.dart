@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/modules/danmaku/danmaku_ch_convert.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/modules/danmaku/danmaku_ch_convert.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 extension _ConversionLabel on DanmakuChConvert {
   String get label => switch (this) {

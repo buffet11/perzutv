@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:kazutv/modules/movie/movie_history.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/modules/movie/movie_history.dart';
+import 'package:perzutv/modules/movie/movie_origin.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 /// 影视播放进度的持久化。
 ///
@@ -19,14 +20,31 @@ class MovieHistoryService {
   static const maxRecords = 200;
 
   /// 按最近观看排序。
-  static List<MoviePlayProgress> all() {
+  ///
+  /// [origin] 非空时只返回该来源模块（[MovieOrigin.movie] / [MovieOrigin.anime]）
+  /// 的记录 —— 「我的 → 观看记录」的两个列表就是这么分的。
+  static List<MoviePlayProgress> all({String? origin}) {
     final records = <MoviePlayProgress>[];
     for (final raw in GStorage.movieHistories.values) {
       final parsed = _decode(raw);
-      if (parsed != null) records.add(parsed);
+      if (parsed == null) continue;
+      if (origin != null && parsed.origin != origin) continue;
+      records.add(parsed);
     }
     records.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     return records;
+  }
+
+  /// 各来源模块各有多少条（给「我的」页的统计文案用）。
+  static Map<String, int> countByOrigin() {
+    final counts = <String, int>{
+      MovieOrigin.movie: 0,
+      MovieOrigin.anime: 0,
+    };
+    for (final record in all()) {
+      counts[record.origin] = (counts[record.origin] ?? 0) + 1;
+    }
+    return counts;
   }
 
   static MoviePlayProgress? find(String sourceKey, String vodId) {
@@ -48,6 +66,20 @@ class MovieHistoryService {
     if (sourceKey.isEmpty || vodId.isEmpty) return;
     await GStorage.movieHistories
         .delete(MoviePlayProgress.keyOf(sourceKey, vodId));
+  }
+
+  /// 删一条记录（记录页里逐条清除用）。
+  static Future<void> removeRecord(MoviePlayProgress progress) =>
+      remove(progress.sourceKey, progress.vodId);
+
+  /// 只清某个来源模块的记录（记录页的「清空本列表」用）。
+  ///
+  /// 注意：同一个影片若在两个模块都看过，`key` 是同一个（sourceKey:vodId），
+  /// 只会留最后一条记录，所以这里按记录当前的 origin 删即可。
+  static Future<void> clearOrigin(String origin) async {
+    for (final record in all(origin: origin)) {
+      await remove(record.sourceKey, record.vodId);
+    }
   }
 
   static Future<void> clearAll() async {

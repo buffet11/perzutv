@@ -5,12 +5,12 @@ import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:kazutv/modules/history/history_module.dart';
-import 'package:kazutv/modules/history/history_sync.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/storage/history_storage_coordinator.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/async_serial_queue.dart';
+import 'package:perzutv/modules/history/history_module.dart';
+import 'package:perzutv/modules/history/history_sync.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/history_storage_coordinator.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/async_serial_queue.dart';
 
 class HistorySyncService {
   static const int checkpointLogThresholdBytes = 1024 * 1024;

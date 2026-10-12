@@ -1,13 +1,13 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:canvas_danmaku/canvas_danmaku.dart' as canvas;
-import 'package:kazutv/modules/danmaku/danmaku_module.dart';
-import 'package:kazutv/pages/download/download_controller.dart';
-import 'package:kazutv/request/apis/danmaku_api.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/modules/danmaku/danmaku_module.dart';
+import 'package:perzutv/pages/download/download_controller.dart';
+import 'package:perzutv/request/apis/danmaku_api.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:mobx/mobx.dart';
-import 'package:kazutv/utils/danmaku.dart';
+import 'package:perzutv/utils/danmaku.dart';
 
 part 'player_danmaku_controller.g.dart';
 
@@ -139,18 +139,21 @@ abstract class _PlayerDanmakuController with Store {
   Future<DanmakuLoadResult> fetchDanmaku(
     int bangumiId,
     String pluginName,
-    int episode,
-  ) async {
+    int episode, {
+    String bangumiName = '',
+  }) async {
     if (isLocalPlayback()) {
       return await _fetchCachedDanmaku(
         bangumiId,
         pluginName,
         episode,
+        bangumiName: bangumiName,
       );
     }
     return await _fetchDanDanmakuByBgmBangumiID(
       bangumiId,
       episode,
+      bangumiName: bangumiName,
     );
   }
 
@@ -189,7 +192,8 @@ abstract class _PlayerDanmakuController with Store {
   }
 
   Future<DanmakuLoadResult> _fetchCachedDanmaku(
-      int bangumiId, String pluginName, int episode) async {
+      int bangumiId, String pluginName, int episode,
+      {String bangumiName = ''}) async {
     KazumiLogger().i(
         'PlayerController: attempting to load cached danmaku for episode $episode');
     var nextBangumiID = bangumiID;
@@ -211,8 +215,10 @@ abstract class _PlayerDanmakuController with Store {
         KazumiLogger()
             .i('PlayerController: no cached danmaku, attempting online fetch');
         try {
-          nextBangumiID =
-              await DanmakuApi.getDanDanBangumiIDByBgmBangumiID(bangumiId);
+          nextBangumiID = await DanmakuApi.resolveDanDanBangumiID(
+            bgmBangumiID: bangumiId,
+            title: bangumiName,
+          );
           if (nextBangumiID != 0) {
             var res = await DanmakuApi.getDanDanmaku(nextBangumiID, episode);
             if (res.isNotEmpty) {
@@ -268,13 +274,16 @@ abstract class _PlayerDanmakuController with Store {
   }
 
   Future<DanmakuLoadResult> _fetchDanDanmakuByBgmBangumiID(
-      int bgmBangumiID, int episode) async {
+      int bgmBangumiID, int episode,
+      {String bangumiName = ''}) async {
     KazumiLogger().i(
         'PlayerController: attempting to get danmaku [BgmBangumiID] $bgmBangumiID');
     var nextBangumiID = bangumiID;
     try {
-      nextBangumiID =
-          await DanmakuApi.getDanDanBangumiIDByBgmBangumiID(bgmBangumiID);
+      nextBangumiID = await DanmakuApi.resolveDanDanBangumiID(
+        bgmBangumiID: bgmBangumiID,
+        title: bangumiName,
+      );
       if (nextBangumiID == 0) {
         return DanmakuLoadResult.success(
           danmakus: const [],

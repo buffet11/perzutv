@@ -8,10 +8,16 @@ class ApiEndpoints {
   static const int apiLevel = 8;
 
   /// 项目主页
-  static const String projectUrl = "https://github.com/buffet11/kazutv";
+  static const String projectUrl = "https://github.com/buffet11/perzutv";
 
   /// Github 项目主页
-  static const String sourceUrl = "https://github.com/buffet11/kazutv";
+  static const String sourceUrl = "https://github.com/buffet11/perzutv";
+
+  /// 上游开源项目（GPL-3.0）。
+  ///
+  /// 本项目在其基础上做了大量修改与重构，依许可要求**保留署名与出处链接**，
+  /// 但「关于」页以 Perzutv 自己为主语介绍，不再把自己描述成上游的附庸。
+  static const String upstreamProjectUrl = "https://github.com/Predidit/Kazumi";
 
   /// 图标作者
   static const String iconUrl = "https://www.pixiv.net/users/66219277";
@@ -32,7 +38,7 @@ class ApiEndpoints {
   /// 一旦沿用上游源，`needUpdate()` 会拿 0.1.0 去比 2.3.7 判定"有新版本"，
   /// 然后把用户引导去下载**原版 Kazumi**，等于覆盖掉本分支。
   static const String latestApp =
-      'https://api.github.com/repos/buffet11/kazutv/releases/latest';
+      'https://api.github.com/repos/buffet11/perzutv/releases/latest';
 
   /// 更新检查地址。
   /// 本分支暂无自建镜像后端，直接走 GitHub Release API。
@@ -60,8 +66,12 @@ class ApiEndpoints {
   /// Bangumi 鉴权 API
   static const String bangumiAuthAPIMirrorDomain = 'https://api.bgmapi.com';
 
-  /// Telegram 群组
-  static const String telegramGroup = 'https://t.me/kazumi_app';
+  /// ⚠️ 这是**上游 Kazumi 的** Telegram 群，不是本项目的社群。
+  ///
+  /// 本项目目前没有自己的社群入口，所以「关于」页不再展示它 ——
+  /// 否则等于把用户引到别人的群里去问我们的问题。常量保留是为了记录出处，
+  /// 名字里带 upstream 以免日后被误当成"我们的群"接回去。
+  static const String upstreamTelegramGroup = 'https://t.me/kazumi_app';
 
   /// 番剧信息
   static const String bangumiInfoByID = '/v0/subjects/{0}';

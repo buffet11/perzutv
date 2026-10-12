@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:kazutv/modules/danmaku/danmaku_shield_rule.dart';
-import 'package:kazutv/modules/danmaku/danmaku_shield_sync.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/async_serial_queue.dart';
+import 'package:perzutv/modules/danmaku/danmaku_shield_rule.dart';
+import 'package:perzutv/modules/danmaku/danmaku_shield_sync.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/async_serial_queue.dart';
 
 enum DanmakuShieldChange { localEdit, restore }
 

@@ -1,5 +1,5 @@
-name: kazutv
-description: "Kazutv — 基于 Kazumi 二次开发的番剧 + 影视聚合播放器"
+name: perzutv
+description: "Perzutv — 基于 Kazumi 二次开发的动漫 + 影视聚合播放器"
 publish_to: "none"
 version: 0.1.0+1
 
@@ -146,7 +146,7 @@ flutter_native_splash:
   image_dark_ios: assets/images/logo/logo_ios.png
 
 msix_config:
-  display_name: Kazutv
+  display_name: Perzutv
   publisher: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
   logo_path: assets/images/logo/logo_rounded.png
   sign_msix: false

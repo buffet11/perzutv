@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/modules/movie/parse_source.dart';
-import 'package:kazutv/pages/settings/movie/parse_source_edit_dialog.dart';
-import 'package:kazutv/services/movie/parse_source_manager.dart';
-import 'package:kazutv/services/movie/stream_resolver.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/modules/movie/parse_source.dart';
+import 'package:perzutv/pages/settings/movie/parse_source_edit_dialog.dart';
+import 'package:perzutv/services/movie/parse_source_manager.dart';
+import 'package:perzutv/services/movie/stream_resolver.dart';
 
 /// 解析源管理。
 ///

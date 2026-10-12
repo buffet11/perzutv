@@ -136,7 +136,7 @@ def main():
             for t, ln, u in r["samples"].get(kind, []):
                 print(f"  [{r['name']}][{kind}][{ln}] {t}: {u}")
 
-    with open("F:/WB-project/kazutv/_url_shapes.json", "w", encoding="utf-8") as f:
+    with open("F:/WB-project/perzutv/_url_shapes.json", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print("\n明细已写入 _url_shapes.json")
 

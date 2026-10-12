@@ -3,9 +3,9 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/network/proxy_manager.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/network/proxy_manager.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:win32/win32.dart';
 
 /// Snapshot of the Windows system proxy configuration.

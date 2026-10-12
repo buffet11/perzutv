@@ -1,4 +1,4 @@
-import 'package:kazutv/services/video_source/video_source_format.dart';
+import 'package:perzutv/services/video_source/video_source_format.dart';
 
 class PlaybackInitParams {
   final String videoUrl;

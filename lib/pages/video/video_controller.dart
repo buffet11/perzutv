@@ -1,33 +1,33 @@
 import 'dart:async';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/modules/roads/road_module.dart';
-import 'package:kazutv/pages/video/video_playback_args.dart';
-import 'package:kazutv/plugins/plugins.dart';
-import 'package:kazutv/pages/history/history_controller.dart';
-import 'package:kazutv/pages/player/player_controller.dart';
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/modules/history/history_module.dart';
-import 'package:kazutv/modules/movie/movie_history.dart';
-import 'package:kazutv/services/movie/movie_history_service.dart';
-import 'package:kazutv/services/movie/stream_resolver.dart';
-import 'package:kazutv/repositories/download_repository.dart';
-import 'package:kazutv/services/download/download_manager.dart';
-import 'package:kazutv/services/video_source/services.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/modules/roads/road_module.dart';
+import 'package:perzutv/pages/video/video_playback_args.dart';
+import 'package:perzutv/plugins/plugins.dart';
+import 'package:perzutv/pages/history/history_controller.dart';
+import 'package:perzutv/pages/player/player_controller.dart';
+import 'package:perzutv/modules/bangumi/bangumi_item.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/modules/history/history_module.dart';
+import 'package:perzutv/modules/movie/movie_history.dart';
+import 'package:perzutv/services/movie/movie_history_service.dart';
+import 'package:perzutv/services/movie/stream_resolver.dart';
+import 'package:perzutv/repositories/download_repository.dart';
+import 'package:perzutv/services/download/download_manager.dart';
+import 'package:perzutv/services/video_source/services.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
 import 'package:mobx/mobx.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/modules/bangumi/episode_item.dart';
-import 'package:kazutv/modules/comments/comment_item.dart';
-import 'package:kazutv/modules/comments/comment_response.dart';
-import 'package:kazutv/request/apis/bangumi_api.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/episode_url.dart';
-import 'package:kazutv/utils/http_headers.dart';
-import 'package:kazutv/utils/media.dart';
-import 'package:kazutv/utils/async_session.dart';
-import 'package:kazutv/services/platform/display_mode_service.dart';
-import 'package:kazutv/pages/video/video_fullscreen_controller.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/modules/bangumi/episode_item.dart';
+import 'package:perzutv/modules/comments/comment_item.dart';
+import 'package:perzutv/modules/comments/comment_response.dart';
+import 'package:perzutv/request/apis/bangumi_api.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/episode_url.dart';
+import 'package:perzutv/utils/http_headers.dart';
+import 'package:perzutv/utils/media.dart';
+import 'package:perzutv/utils/async_session.dart';
+import 'package:perzutv/services/platform/display_mode_service.dart';
+import 'package:perzutv/pages/video/video_fullscreen_controller.dart';
 
 part 'video_controller.g.dart';
 
@@ -661,6 +661,7 @@ abstract class _VideoPageController with Store implements Disposable {
         params.bangumiId,
         params.pluginName,
         params.danmakuEpisodeNumber,
+        bangumiName: params.bangumiName ?? '',
       );
       if (session.isActive && danmakuSession.isActive) {
         if (result.hasDanmakus) {
@@ -825,6 +826,8 @@ abstract class _VideoPageController with Store implements Disposable {
         name: args.movieName,
         coverUrl: args.coverUrl,
         routeName: args.routeName,
+        // 动漫 / 影视共用这条链路，来源模块靠入口页带下来
+        origin: args.origin,
         episodeIndex: index < 0 ? 0 : index,
         episodeTitle: title,
         positionSeconds: position.inSeconds,

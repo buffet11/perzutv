@@ -1,15 +1,15 @@
 import 'package:canvas_danmaku/canvas_danmaku.dart';
 import 'package:flutter/material.dart';
 
-import 'package:kazutv/bean/dialog/adaptive_bottom_sheet.dart';
-import 'package:kazutv/bean/dialog/material_bottom_sheet.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/bean/widget/connected_tabs.dart';
-import 'package:kazutv/bean/widget/content_section.dart';
-import 'package:kazutv/pages/settings/danmaku/danmaku_ch_convert_tile.dart';
-import 'package:kazutv/pages/settings/danmaku/danmaku_shield_settings_sheet.dart';
-import 'package:kazutv/pages/settings/danmaku/danmaku_time_offset_sheet.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/bean/dialog/adaptive_bottom_sheet.dart';
+import 'package:perzutv/bean/dialog/material_bottom_sheet.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/bean/widget/connected_tabs.dart';
+import 'package:perzutv/bean/widget/content_section.dart';
+import 'package:perzutv/pages/settings/danmaku/danmaku_ch_convert_tile.dart';
+import 'package:perzutv/pages/settings/danmaku/danmaku_shield_settings_sheet.dart';
+import 'package:perzutv/pages/settings/danmaku/danmaku_time_offset_sheet.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 enum _DanmakuSettingsDestination {
   timeOffset,

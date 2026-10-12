@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/plugins/anti_crawler_config.dart';
-import 'package:kazutv/plugins/api_rule_config.dart';
-import 'package:kazutv/request/core/network_exception.dart';
-import 'package:kazutv/services/plugin/rule_engine.dart';
-import 'package:kazutv/services/plugin/rule_engine_models.dart';
-import 'package:kazutv/services/plugin/xpath_rule_strategy.dart';
+import 'package:perzutv/plugins/anti_crawler_config.dart';
+import 'package:perzutv/plugins/api_rule_config.dart';
+import 'package:perzutv/request/core/network_exception.dart';
+import 'package:perzutv/services/plugin/rule_engine.dart';
+import 'package:perzutv/services/plugin/rule_engine_models.dart';
+import 'package:perzutv/services/plugin/xpath_rule_strategy.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

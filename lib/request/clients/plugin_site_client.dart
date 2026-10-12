@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:kazutv/request/core/dio_factory.dart';
-import 'package:kazutv/request/core/network_error_mapper.dart';
-import 'package:kazutv/utils/http_headers.dart';
+import 'package:perzutv/request/core/dio_factory.dart';
+import 'package:perzutv/request/core/network_error_mapper.dart';
+import 'package:perzutv/utils/http_headers.dart';
 
 class PluginSiteClient {
   PluginSiteClient._();

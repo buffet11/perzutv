@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/utils/version.dart';
+import 'package:perzutv/utils/version.dart';
 
 void main() {
   group('needUpdate', () {

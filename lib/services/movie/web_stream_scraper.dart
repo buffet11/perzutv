@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:kazutv/request/core/dio_factory.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/movie/movie_stream_parsing.dart';
+import 'package:perzutv/request/core/dio_factory.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/movie/movie_stream_parsing.dart';
 
 /// 从网页里解析出来的可播地址。
 class WebStream {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:kazutv/services/video_source/video_source_service.dart';
-import 'package:kazutv/services/video_source/webview_video_source_service.dart';
+import 'package:perzutv/services/video_source/video_source_service.dart';
+import 'package:perzutv/services/video_source/webview_video_source_service.dart';
 
 class VideoSourceResolverPool {
   final List<_VideoSourceResolverWorker> _workers = [];

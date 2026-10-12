@@ -1,5 +1,5 @@
-import 'package:kazutv/pages/player/controller/player_danmaku_controller.dart';
-import 'package:kazutv/pages/player/controller/player_playback_controller.dart';
+import 'package:perzutv/pages/player/controller/player_danmaku_controller.dart';
+import 'package:perzutv/pages/player/controller/player_playback_controller.dart';
 import 'package:media_kit/media_kit.dart';
 
 class _InteractiveSeekSession {

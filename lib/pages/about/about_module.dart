@@ -1,7 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/pages/about/about_page.dart';
-import 'package:kazutv/pages/about/credits_page.dart';
-import 'package:kazutv/pages/my/my_controller.dart';
+import 'package:perzutv/pages/about/about_page.dart';
+import 'package:perzutv/pages/about/credits_page.dart';
+import 'package:perzutv/pages/my/my_controller.dart';
 
 final aboutModule = createModule(
   path: '/about',

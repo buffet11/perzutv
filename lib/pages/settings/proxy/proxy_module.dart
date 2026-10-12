@@ -1,6 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/pages/settings/proxy/proxy_editor_page.dart';
-import 'package:kazutv/pages/settings/proxy/proxy_settings_page.dart';
+import 'package:perzutv/pages/settings/proxy/proxy_editor_page.dart';
+import 'package:perzutv/pages/settings/proxy/proxy_settings_page.dart';
 
 final proxyModule = createModule(
   path: '/proxy',

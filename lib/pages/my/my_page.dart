@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'package:kazutv/bean/appbar/sys_app_bar.dart';
-import 'package:kazutv/pages/menu/route_visibility.dart';
-import 'package:kazutv/pages/my/my_controller.dart';
-import 'package:kazutv/pages/my/my_space_view.dart';
+import 'package:perzutv/bean/appbar/sys_app_bar.dart';
+import 'package:perzutv/pages/menu/route_visibility.dart';
+import 'package:perzutv/pages/my/my_controller.dart';
+import 'package:perzutv/pages/my/my_space_view.dart';
+import 'package:perzutv/modules/movie/movie_origin.dart';
+import 'package:perzutv/services/movie/movie_history_service.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key, required this.controller});
@@ -55,10 +56,7 @@ class _MyPageState extends State<MyPage> {
         MyDestination.theme => '/settings/theme',
         MyDestination.player => '/settings/player',
         MyDestination.danmaku => '/settings/danmaku/',
-        MyDestination.rules => '/settings/plugin/',
-        MyDestination.history => '/settings/history/',
-        MyDestination.downloads => '/settings/download/',
-        MyDestination.sync => '/settings/sync',
+        MyDestination.records => '/settings/records',
         MyDestination.storage => '/settings/storage',
         MyDestination.about => '/settings/about/',
       });
@@ -88,12 +86,15 @@ class _MyPageState extends State<MyPage> {
       body: SafeArea(
         top: false,
         bottom: false,
-        child: Observer(
-          builder: (context) => MySpaceView(
-            stats: widget.controller.watchStats,
+        // 观看记录：影视与动漫分开统计（两套内容共用同一份历史，靠 origin 区分）
+        child: Builder(builder: (context) {
+          final counts = MovieHistoryService.countByOrigin();
+          return MySpaceView(
+            movieCount: counts[MovieOrigin.movie] ?? 0,
+            animeCount: counts[MovieOrigin.anime] ?? 0,
             onOpen: _open,
-          ),
-        ),
+          );
+        }),
       ),
     );
   }

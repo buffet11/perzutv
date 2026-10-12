@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart' show rootBundle, AssetManifest;
-import 'package:kazutv/services/logging/logger.dart';
+import 'package:perzutv/services/logging/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 

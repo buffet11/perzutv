@@ -4,18 +4,20 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:tray_manager/tray_manager.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/network/metered_network_service.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/danmaku/danmaku_service_host.dart';
+import 'package:perzutv/services/network/metered_network_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/dialog/exit_confirmation_dialog.dart';
-import 'package:kazutv/bean/settings/theme_provider.dart';
-import 'package:kazutv/navigation.dart';
-import 'package:kazutv/utils/constants.dart';
-import 'package:kazutv/utils/device.dart';
-import 'package:kazutv/utils/theme.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/dialog/exit_confirmation_dialog.dart';
+import 'package:perzutv/bean/settings/theme_provider.dart';
+import 'package:perzutv/navigation.dart';
+import 'package:perzutv/utils/constants.dart';
+import 'package:perzutv/utils/device.dart';
+import 'package:perzutv/utils/theme.dart';
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
@@ -45,7 +47,38 @@ class _AppWidgetState extends State<AppWidget>
       await windowManager.setPreventClose(true);
       await _handleTray();
     }
+    if (Platform.isWindows) {
+      // 内置弹幕服务：随应用启动（已在跑则复用），环境缺失时一次性弹窗引导。
+      DanmakuServiceHost.onUnavailable = _showDanmakuServiceSetupDialog;
+      DanmakuServiceHost.instance.warmup();
+    }
     await _configurePreferredDisplayMode();
+  }
+
+  void _showDanmakuServiceSetupDialog(String message) {
+    // warmup 可能在首帧前触发，延到帧后再弹，保证导航上下文可用。
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      KazumiDialog.show(
+        builder: (_) => AlertDialog(
+          title: const Text('内置弹幕服务'),
+          content: Text('$message。\n\n可安装 Node.js（LTS 版）后重启应用，'
+              '或在 弹幕设置 中关闭「内置弹幕服务」改用其他弹幕源。'),
+          actions: [
+            TextButton(
+              onPressed: () => launchUrl(
+                Uri.parse('https://nodejs.org/zh-cn/download'),
+                mode: LaunchMode.externalApplication,
+              ),
+              child: const Text('去下载 Node.js'),
+            ),
+            TextButton(
+              onPressed: () => KazumiDialog.dismiss(),
+              child: const Text('知道了'),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Future<void> _configurePreferredDisplayMode() async {
@@ -182,6 +215,7 @@ class _AppWidgetState extends State<AppWidget>
       case 'show_window':
         windowManager.show();
       case 'exit':
+        DanmakuServiceHost.instance.shutdown();
         exit(0);
     }
   }
@@ -218,6 +252,7 @@ class _AppWidgetState extends State<AppWidget>
       if (!mounted) return;
       switch (action) {
         case ExitDialogAction.exit:
+          DanmakuServiceHost.instance.shutdown();
           exit(0);
         case ExitDialogAction.minimizeToTray:
           await windowManager.hide();
@@ -257,19 +292,19 @@ class _AppWidgetState extends State<AppWidget>
       await trayManager.setIcon('assets/images/logo/logo_lanczos.ico');
     } else if (Platform.environment.containsKey('FLATPAK_ID') ||
         Platform.environment.containsKey('SNAP')) {
-      await trayManager.setIcon('io.github.buffet11.kazutv');
+      await trayManager.setIcon('io.github.buffet11.perzutv');
     } else {
       await trayManager.setIcon('assets/images/logo/logo_rounded.png');
     }
 
     if (!Platform.isLinux) {
-      await trayManager.setToolTip('Kazutv');
+      await trayManager.setToolTip('Perzutv');
     }
 
     Menu trayMenu = Menu(items: [
       MenuItem(key: 'show_window', label: '显示窗口'),
       MenuItem.separator(),
-      MenuItem(key: 'exit', label: '退出 Kazutv')
+      MenuItem(key: 'exit', label: '退出 Perzutv')
     ]);
     await trayManager.setContextMenu(trayMenu);
   }
@@ -302,7 +337,7 @@ class _AppWidgetState extends State<AppWidget>
             : dynamicDarkTheme;
 
         return MaterialApp.router(
-          title: "Kazutv",
+          title: "Perzutv",
           localizationsDelegates: GlobalMaterialLocalizations.delegates,
           supportedLocales: const [
             Locale.fromSubtags(

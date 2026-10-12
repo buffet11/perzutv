@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:kazutv/services/logging/logger.dart';
+import 'package:perzutv/services/logging/logger.dart';
 
 class BangumiAvatar extends StatelessWidget {
   const BangumiAvatar({

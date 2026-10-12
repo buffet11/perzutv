@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
 
-import 'package:kazutv/bean/widget/empty_state_widget.dart';
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/modules/roads/road_module.dart';
+import 'package:perzutv/bean/widget/empty_state_widget.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/modules/roads/road_module.dart';
 
 class EpisodeSelectionPanel extends StatefulWidget {
   const EpisodeSelectionPanel({

@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:kazutv/modules/search/plugin_search_module.dart';
-import 'package:kazutv/plugins/api_rule_config.dart';
-import 'package:kazutv/request/clients/plugin_site_client.dart';
-import 'package:kazutv/request/core/network_exception.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/plugin/api_rule_strategy.dart';
-import 'package:kazutv/services/plugin/plugin_cookie_manager.dart';
-import 'package:kazutv/services/plugin/rule_engine_models.dart';
-import 'package:kazutv/services/plugin/xpath_rule_strategy.dart';
+import 'package:perzutv/modules/search/plugin_search_module.dart';
+import 'package:perzutv/plugins/api_rule_config.dart';
+import 'package:perzutv/request/clients/plugin_site_client.dart';
+import 'package:perzutv/request/core/network_exception.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/plugin/api_rule_strategy.dart';
+import 'package:perzutv/services/plugin/plugin_cookie_manager.dart';
+import 'package:perzutv/services/plugin/rule_engine_models.dart';
+import 'package:perzutv/services/plugin/xpath_rule_strategy.dart';
 
 abstract interface class RuleRequestExecutor {
   Future<String> execute(

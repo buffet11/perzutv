@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/utils/episode_url.dart';
+import 'package:perzutv/utils/episode_url.dart';
 
 void main() {
   group('normalizeEpisodeUrl', () {

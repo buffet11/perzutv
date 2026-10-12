@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
-import 'package:kazutv/modules/movie/movie_item.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
-import 'package:kazutv/services/movie/movie_search_service.dart';
-import 'package:kazutv/services/movie/movie_source_manager.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/modules/movie/movie_history.dart';
+import 'package:perzutv/modules/movie/movie_item.dart';
+import 'package:perzutv/modules/movie/movie_origin.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
+import 'package:perzutv/services/movie/movie_history_service.dart';
+import 'package:perzutv/services/movie/movie_search_service.dart';
+import 'package:perzutv/services/movie/movie_source_manager.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 /// 影视 Tab 的状态。
 ///
@@ -29,6 +32,13 @@ class MovieController extends ChangeNotifier {
   String? sourceFilter;
 
   String keyword = '';
+
+  /// 观看历史（最近的在前），供初始态的「继续观看」区块使用。
+  ///
+  /// 复用已有的 [MovieHistoryService]，不新建存储 —— 里面的
+  /// `MoviePlayProgress` 已带片名、封面、进度，足够直接渲染卡片。
+  /// 首次为 `const []`（还没读过盘），[loadWatchHistory] 之后才有内容。
+  List<MoviePlayProgress> watchHistory = const [];
 
   /// 搜索历史。
   ///
@@ -130,6 +140,49 @@ class MovieController extends ChangeNotifier {
   Future<void> clearHistory() async {
     await GStorage.putStringListSettingByName(historyKey, <String>[]);
     notifyListeners();
+  }
+
+  /// 读取观看历史（进入页面、以及从详情/播放页返回时各调一次）。
+  ///
+  /// **只取影视来源的记录**：动漫模块走的是同一条播放链路，也写同一份历史，
+  /// 但它的记录属于「动漫」列表（见「我的 → 观看记录」），不该混进影视首页的
+  /// 「继续观看」里。
+  ///
+  /// 读盘失败只降级为空列表，不抛 —— 历史读不出来不该把整个影视页搞崩。
+  Future<void> loadWatchHistory() async {
+    List<MoviePlayProgress> list;
+    try {
+      list = MovieHistoryService.all(origin: MovieOrigin.movie);
+    } catch (_) {
+      list = const <MoviePlayProgress>[];
+    }
+    watchHistory = list;
+    notifyListeners();
+  }
+
+  /// 把一条播放历史还原成搜索结果条目，作为影视详情页的 arguments。
+  ///
+  /// 历史里**有** sourceKey / vodId / name(片名) / coverUrl(封面)，所以能直接
+  /// 拼出 [MovieSearchItem]，不必再打一次源站接口（详情页自己会拉详情）。
+  /// 历史里**没有** sourceName / typeName / year / area / remarks / score /
+  /// isAdult —— 这些是搜索结果独有的，留默认值即可。其中 sourceName 用源列表
+  /// 里的显示名补上（源被删/停用就退回 sourceKey，至少不是空白）。
+  MovieSearchItem toSearchItem(MoviePlayProgress progress) {
+    return MovieSearchItem(
+      sourceKey: progress.sourceKey,
+      sourceName: _sourceNameOf(progress.sourceKey),
+      vodId: progress.vodId,
+      name: progress.name,
+      pic: progress.coverUrl,
+    );
+  }
+
+  /// 按 key 找源的显示名；找不到就用 key 本身兜底。
+  static String _sourceNameOf(String key) {
+    for (final source in MovieSourceManager.all()) {
+      if (source.key == key) return source.name;
+    }
+    return key;
   }
 
   Future<void> _remember(String kw) async {

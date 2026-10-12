@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
 
 /// 结果筛选条：按源过滤。
 ///

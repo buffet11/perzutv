@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:kazutv/modules/movie/builtin_movie_sources.dart';
-import 'package:kazutv/modules/movie/movie_item.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
-import 'package:kazutv/request/apis/apple_cms_api.dart';
+import 'package:perzutv/modules/movie/builtin_movie_sources.dart';
+import 'package:perzutv/modules/movie/movie_item.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
+import 'package:perzutv/request/apis/apple_cms_api.dart';
 
 /// 某个源在这次搜索里失败了。
 ///

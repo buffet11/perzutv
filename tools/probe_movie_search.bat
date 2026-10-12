@@ -1,6 +1,6 @@
 @echo off
 rem ============================================================
-rem  Kazutv movie search probe (P1)
+rem  Perzutv movie search probe (P1)
 rem
 rem  Usage: double-click this file, or
 rem         probe_movie_search.bat <keyword>
@@ -64,7 +64,7 @@ if errorlevel 1 (
 )
 
 echo ============================================================
-echo   Kazutv movie search probe
+echo   Perzutv movie search probe
 echo ============================================================
 echo.
 
@@ -95,7 +95,7 @@ if defined VSDIR (
 )
 if not defined VSDIR echo [WARN] Visual Studio not found; native build hooks may fail.
 
-set "LOG=%TEMP%\kazutv_probe.log"
+set "LOG=%TEMP%\perzutv_probe.log"
 echo.
 echo Running... output appears when finished, and is also saved to:
 echo   %LOG%

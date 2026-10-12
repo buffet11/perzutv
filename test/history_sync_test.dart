@@ -3,11 +3,11 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
-import 'package:kazutv/modules/bangumi/bangumi_tag.dart';
-import 'package:kazutv/modules/history/history_module.dart';
-import 'package:kazutv/modules/history/history_sync.dart';
-import 'package:kazutv/services/sync/history_sync_service.dart';
+import 'package:perzutv/modules/bangumi/bangumi_item.dart';
+import 'package:perzutv/modules/bangumi/bangumi_tag.dart';
+import 'package:perzutv/modules/history/history_module.dart';
+import 'package:perzutv/modules/history/history_sync.dart';
+import 'package:perzutv/services/sync/history_sync_service.dart';
 
 void main() {
   group('HistorySyncDevice', () {

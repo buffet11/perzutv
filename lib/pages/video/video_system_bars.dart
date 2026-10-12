@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:kazutv/navigation.dart';
-import 'package:kazutv/services/platform/display_mode_service.dart';
+import 'package:perzutv/navigation.dart';
+import 'package:perzutv/services/platform/display_mode_service.dart';
 
 /// Place above Scaffold to measure the window without keyboard insets.
 class VideoSystemBars extends StatefulWidget {

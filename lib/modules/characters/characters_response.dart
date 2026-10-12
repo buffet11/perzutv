@@ -1,5 +1,5 @@
-import 'package:kazutv/request/config/api_endpoints.dart';
-import 'package:kazutv/modules/characters/character_item.dart';
+import 'package:perzutv/request/config/api_endpoints.dart';
+import 'package:perzutv/modules/characters/character_item.dart';
 
 /// The response from [ApiEndpoints.bangumiInfoByID]
 /// It contains a list of [CharacterItem]

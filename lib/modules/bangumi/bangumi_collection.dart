@@ -1,4 +1,4 @@
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
+import 'package:perzutv/modules/bangumi/bangumi_item.dart';
 
 import 'bangumi_collection_type.dart';
 

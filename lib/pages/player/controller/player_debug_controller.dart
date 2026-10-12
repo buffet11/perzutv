@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:kazutv/services/logging/logger.dart';
+import 'package:perzutv/services/logging/logger.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:mobx/mobx.dart';
 

@@ -205,7 +205,7 @@ def main():
             print(f"{r['name']:<12}{label:>12}  {r.get('height_from','')}")
 
     # 落一份 JSON 备查
-    with open("F:/WB-project/kazutv/_hq_probe.json", "w", encoding="utf-8") as f:
+    with open("F:/WB-project/perzutv/_hq_probe.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     print("\n明细已写入 _hq_probe.json")
 

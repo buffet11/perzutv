@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/modules/my/watch_stats.dart';
-import 'package:kazutv/modules/danmaku/danmaku_shield_rule.dart';
-import 'package:kazutv/repositories/danmaku_shield_repository.dart';
-import 'package:kazutv/repositories/download_repository.dart';
-import 'package:kazutv/repositories/history_repository.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/update/auto_updater.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/modules/my/watch_stats.dart';
+import 'package:perzutv/modules/danmaku/danmaku_shield_rule.dart';
+import 'package:perzutv/repositories/danmaku_shield_repository.dart';
+import 'package:perzutv/repositories/download_repository.dart';
+import 'package:perzutv/repositories/history_repository.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/update/auto_updater.dart';
 import 'package:mobx/mobx.dart';
 
 part 'my_controller.g.dart';

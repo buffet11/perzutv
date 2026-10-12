@@ -1,26 +1,27 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:kazutv/app_module.dart';
-import 'package:kazutv/app_widget.dart';
+import 'package:perzutv/app_module.dart';
+import 'package:perzutv/app_widget.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/bean/settings/theme_provider.dart';
+import 'package:perzutv/bean/settings/theme_provider.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-import 'package:kazutv/services/network/metered_network_service.dart';
-import 'package:kazutv/services/network/ech_http_licenses.dart';
-import 'package:kazutv/services/network/proxy_manager.dart';
-import 'package:kazutv/services/network/system_proxy_service.dart';
+import 'package:perzutv/services/network/metered_network_service.dart';
+import 'package:perzutv/services/network/ech_http_licenses.dart';
+import 'package:perzutv/services/network/proxy_manager.dart';
+import 'package:perzutv/services/network/system_proxy_service.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:kazutv/pages/error/storage_error_page.dart';
+import 'package:perzutv/pages/error/storage_error_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:kazutv/utils/device.dart';
-import 'package:kazutv/services/platform/desktop_window_config.dart';
-import 'package:kazutv/services/platform/webview_feature_service.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/navigation.dart';
+import 'package:perzutv/utils/device.dart';
+import 'package:perzutv/services/platform/desktop_window_config.dart';
+import 'package:perzutv/services/platform/webview_feature_service.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/navigation.dart';
+import 'package:perzutv/services/storage/legacy_data_migration.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,8 @@ void main() async {
   }
 
   try {
+    // 改名后 Windows 的数据目录会变（由 exe 版本信息推导），首次启动先把旧数据搬过来。
+    await migrateLegacyWindowsAppDataIfNeeded();
     final hivePath = '${(await getApplicationSupportDirectory()).path}/hive';
     await Hive.initFlutter(hivePath);
     await GStorage.init();
@@ -81,7 +84,7 @@ void main() async {
           ? TitleBarStyle.hidden
           : TitleBarStyle.normal,
       windowButtonVisibility: showWindowButton,
-      title: 'Kazutv',
+      title: 'Perzutv',
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       // window_manager controls desktop visibility to avoid startup flicker.

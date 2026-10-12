@@ -2,19 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/request/clients/download_http_client.dart';
-import 'package:kazutv/request/config/api_endpoints.dart';
-import 'package:kazutv/request/core/network_exception.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/request/clients/download_http_client.dart';
+import 'package:perzutv/request/config/api_endpoints.dart';
+import 'package:perzutv/request/core/network_exception.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:kazutv/utils/device.dart';
-import 'package:kazutv/utils/date_time.dart';
-import 'package:kazutv/utils/crypto.dart';
-import 'package:kazutv/utils/version.dart';
+import 'package:perzutv/utils/device.dart';
+import 'package:perzutv/utils/date_time.dart';
+import 'package:perzutv/utils/crypto.dart';
+import 'package:perzutv/utils/version.dart';
 
 enum InstallationType {
   windowsMsix,
@@ -207,7 +207,7 @@ class AutoUpdater {
   Future<void> manualCheckForUpdates() async {
     if (!ApiEndpoints.updateChannelReady) {
       KazumiDialog.showToast(
-          message: 'Kazutv 暂未开放在线更新，请到项目仓库获取新版本');
+          message: 'Perzutv 暂未开放在线更新，请到项目仓库获取新版本');
       return;
     }
     try {
@@ -762,6 +762,6 @@ class AutoUpdater {
     } else if (Platform.isAndroid) {
       extension = '.apk';
     }
-    return 'Kazutv-$version$extension';
+    return 'Perzutv-$version$extension';
   }
 }

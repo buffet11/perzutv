@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/constants.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/constants.dart';
 
 typedef PlayerShortcutAction = FutureOr<void> Function();
 

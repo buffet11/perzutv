@@ -1,4 +1,4 @@
-import 'package:kazutv/modules/comments/comment_item.dart';
+import 'package:perzutv/modules/comments/comment_item.dart';
 
 class CommentResponse {
   List<CommentItem> commentList;

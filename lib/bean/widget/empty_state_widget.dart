@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/widget/state_presentation.dart';
+import 'package:perzutv/bean/widget/state_presentation.dart';
 
 /// Shrink-wraps in slivers and scrolls within bounded viewports.
 class GeneralEmptyState extends StatelessWidget {

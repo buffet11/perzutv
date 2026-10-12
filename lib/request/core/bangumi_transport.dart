@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:ech_http/ech_http.dart';
 import 'package:http/http.dart' as http;
-import 'package:kazutv/request/config/api_endpoints.dart';
-import 'package:kazutv/request/core/network_config.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/network/bangumi_acceleration.dart';
-import 'package:kazutv/services/network/bangumi_ech_resolver.dart';
+import 'package:perzutv/request/config/api_endpoints.dart';
+import 'package:perzutv/request/core/network_config.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/network/bangumi_acceleration.dart';
+import 'package:perzutv/services/network/bangumi_ech_resolver.dart';
 
 const _echRequestKey = 'bangumiEch';
 

@@ -1,10 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/pages/settings/danmaku/danmaku_ch_convert_tile.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/pages/settings/danmaku/danmaku_ch_convert_tile.dart';
+import 'package:perzutv/services/danmaku/danmaku_service_host.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 class DanmakuSettingsPage extends StatefulWidget {
   const DanmakuSettingsPage({super.key});
@@ -32,6 +34,8 @@ class _DanmakuSettingsPageState extends State<DanmakuSettingsPage> {
   late bool danmakuGamerSource;
   late bool danmakuDanDanSource;
   late bool danmakuFollowSpeed;
+  late String customDanmakuApi;
+  late bool embeddedDanmakuService;
 
   @override
   void didChangeDependencies() {
@@ -71,6 +75,78 @@ class _DanmakuSettingsPageState extends State<DanmakuSettingsPage> {
         GStorage.getSetting<bool>(SettingsKeys.danmakuDanDanSource);
     danmakuFollowSpeed =
         GStorage.getSetting<bool>(SettingsKeys.danmakuFollowSpeed);
+    customDanmakuApi =
+        GStorage.getSetting<String>(SettingsKeys.customDanmakuApi);
+    embeddedDanmakuService =
+        GStorage.getSetting<bool>(SettingsKeys.danmakuEmbeddedService);
+  }
+
+  Future<void> _toggleEmbeddedDanmakuService(bool enable) async {
+    await GStorage.putSetting<bool>(
+        SettingsKeys.danmakuEmbeddedService, enable);
+    if (!mounted) return;
+    setState(_loadSettingsFromStorage);
+    if (!enable) {
+      DanmakuServiceHost.instance.shutdown();
+      KazumiDialog.showToast(message: '内置弹幕服务已关闭');
+      return;
+    }
+    if (!Platform.isWindows) {
+      KazumiDialog.showToast(message: '内置弹幕服务仅 Windows 桌面端可用');
+      return;
+    }
+    KazumiDialog.showToast(message: '正在启动内置弹幕服务…');
+    final ok = await DanmakuServiceHost.instance.ensureStarted();
+    if (!mounted) return;
+    KazumiDialog.showToast(
+        message: ok ? '内置弹幕服务已就绪' : '内置弹幕服务启动失败，请查看日志或改用其他弹幕源');
+  }
+
+  Future<void> editCustomDanmakuApi() async {
+    final controller = TextEditingController(
+        text: GStorage.getSetting<String>(SettingsKeys.customDanmakuApi));
+    final result = await KazumiDialog.show<String>(
+      builder: (context) => AlertDialog(
+        title: const Text('自定义弹幕 API'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+                '填写弹弹play 兼容的自建弹幕服务地址（需含 token 前缀），例如：\nhttp://127.0.0.1:9321/87654321\n\n留空则使用官方弹幕源。'),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'http://',
+                isDense: true,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          // 注意：取消时不能 popWith 非 String 值（如 bool），否则与
+          // show<String> 的路由结果类型不匹配会抛运行时异常。
+          TextButton(
+            onPressed: () => KazumiDialog.dismiss(),
+            child: Text('取消'),
+          ),
+          TextButton(
+            onPressed: () =>
+                KazumiDialog.dismiss(popWith: controller.text.trim()),
+            child: Text('保存'),
+          ),
+        ],
+      ),
+    );
+    if (result == null) return;
+    await GStorage.putSetting<String>(SettingsKeys.customDanmakuApi, result);
+    if (!mounted) return;
+    setState(_loadSettingsFromStorage);
+    KazumiDialog.showToast(
+        message: result.isEmpty ? '已恢复使用官方弹幕源' : '弹幕 API 已更新');
   }
 
   Future<void> resetDanmakuSettings() async {
@@ -190,6 +266,24 @@ class _DanmakuSettingsPageState extends State<DanmakuSettingsPage> {
                 },
                 title: Text('弹弹play'),
                 initialValue: danmakuDanDanSource,
+              ),
+              SettingsTile(
+                leading: Icons.dns_rounded,
+                onPressed: (_) => editCustomDanmakuApi(),
+                title: Text('自定义弹幕 API'),
+                description: Text(customDanmakuApi.isEmpty
+                    ? '未启用（使用官方弹幕源）'
+                    : customDanmakuApi),
+              ),
+              SettingsTile.switchTile(
+                leading: Icons.dvr_rounded,
+                onToggle: (value) => _toggleEmbeddedDanmakuService(
+                    value ?? !embeddedDanmakuService),
+                title: Text('内置弹幕服务'),
+                description: const Text(
+                    '随应用启动本机弹幕聚合服务（多源弹幕，无需弹弹play 凭据）。'
+                    '开启后优先于上面的自定义地址；仅 Windows 桌面端生效。'),
+                initialValue: embeddedDanmakuService,
               ),
             ],
           ),

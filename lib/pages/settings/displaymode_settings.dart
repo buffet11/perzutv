@@ -3,10 +3,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/widget/loading_indicator.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/widget/loading_indicator.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 class SetDisplayMode extends StatefulWidget {
   const SetDisplayMode({super.key});

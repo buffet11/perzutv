@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:dio/io.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/network/proxy_utils.dart';
-import 'package:kazutv/services/network/system_proxy_service.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/network/proxy_utils.dart';
+import 'package:perzutv/services/network/system_proxy_service.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 class NetworkConfig {
   const NetworkConfig({

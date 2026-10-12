@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bbcode/bbcode_widget.dart';
-import 'package:kazutv/bean/widget/bangumi_avatar.dart';
-import 'package:kazutv/modules/comments/comment_item.dart';
-import 'package:kazutv/utils/date_time.dart';
+import 'package:perzutv/bbcode/bbcode_widget.dart';
+import 'package:perzutv/bean/widget/bangumi_avatar.dart';
+import 'package:perzutv/modules/comments/comment_item.dart';
+import 'package:perzutv/utils/date_time.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class UserCommentsCard extends StatefulWidget {

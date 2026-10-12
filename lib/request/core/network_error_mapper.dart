@@ -1,6 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:kazutv/request/core/network_exception.dart';
+import 'package:perzutv/request/core/network_exception.dart';
 
 class NetworkErrorMapper {
   const NetworkErrorMapper._();

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'package:kazutv/bean/appbar/sys_app_bar.dart';
-import 'package:kazutv/bean/card/network_img_layer.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/widget/empty_state_widget.dart';
-import 'package:kazutv/bean/widget/loading_indicator.dart';
-import 'package:kazutv/modules/movie/movie_detail.dart';
-import 'package:kazutv/modules/movie/movie_history.dart';
-import 'package:kazutv/modules/movie/movie_item.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
-import 'package:kazutv/navigation.dart';
-import 'package:kazutv/pages/movie/movie_episode_grid.dart';
-import 'package:kazutv/pages/movie/movie_route_selector.dart';
-import 'package:kazutv/pages/video/video_playback_args.dart';
-import 'package:kazutv/request/apis/apple_cms_api.dart';
-import 'package:kazutv/services/movie/movie_history_service.dart';
-import 'package:kazutv/services/movie/movie_source_manager.dart';
-import 'package:kazutv/services/movie/stream_resolver.dart';
+import 'package:perzutv/bean/appbar/sys_app_bar.dart';
+import 'package:perzutv/bean/card/network_img_layer.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/widget/empty_state_widget.dart';
+import 'package:perzutv/bean/widget/loading_indicator.dart';
+import 'package:perzutv/modules/movie/movie_detail.dart';
+import 'package:perzutv/modules/movie/movie_history.dart';
+import 'package:perzutv/modules/movie/movie_item.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
+import 'package:perzutv/navigation.dart';
+import 'package:perzutv/pages/movie/movie_episode_grid.dart';
+import 'package:perzutv/pages/movie/movie_route_selector.dart';
+import 'package:perzutv/pages/video/video_playback_args.dart';
+import 'package:perzutv/request/apis/apple_cms_api.dart';
+import 'package:perzutv/services/movie/movie_history_service.dart';
+import 'package:perzutv/services/movie/movie_source_manager.dart';
+import 'package:perzutv/services/movie/stream_resolver.dart';
 
 /// 影视详情页。
 ///
@@ -239,6 +239,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> with RouteAware {
         coverUrl: detail.pic.isNotEmpty ? detail.pic : widget.item.pic,
         year: detail.year,
         startOffsetSeconds: offsetSeconds,
+        // 带入来源模块，播放时写进观看记录（决定归到电影还是动漫列表）
+        origin: widget.item.origin,
       ),
     );
   }

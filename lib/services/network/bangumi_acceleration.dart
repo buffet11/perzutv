@@ -1,5 +1,5 @@
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/bangumi_mirror_credentials.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/bangumi_mirror_credentials.dart';
 
 enum BangumiAcceleration {
   direct,

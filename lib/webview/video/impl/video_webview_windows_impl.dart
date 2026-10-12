@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:webview_windows/webview_windows.dart';
-import 'package:kazutv/webview/video/video_webview_controller.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/network/proxy_utils.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/video_source/video_source_format.dart';
+import 'package:perzutv/webview/video/video_webview_controller.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/network/proxy_utils.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/video_source/video_source_format.dart';
 
 class VideoWebviewWindowsImpl
     extends VideoWebviewController<WebviewController> {

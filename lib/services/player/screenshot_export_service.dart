@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:kazutv/services/player/screenshot_candidate.dart';
+import 'package:perzutv/services/player/screenshot_candidate.dart';
 import 'package:path/path.dart' as path;
 import 'package:saver_gallery/saver_gallery.dart';
 
@@ -41,7 +41,7 @@ class ScreenshotExportService {
           item.bytes,
           fileName: name,
           extension: 'png',
-          androidRelativePath: 'Pictures/Kazutv',
+          androidRelativePath: 'Pictures/Perzutv',
           skipIfExists: false,
         );
         if (!result.isSuccess) {
@@ -73,7 +73,7 @@ class ScreenshotExportService {
       return String.fromCharCodes(safe.runes.take(24));
     }
 
-    return 'Kazutv_${clean(item.title)}_${clean(item.episode)}_'
+    return 'Perzutv_${clean(item.title)}_${clean(item.episode)}_'
         '${item.timeLabel.replaceAll(':', '-')}_${item.id}.png';
   }
 }

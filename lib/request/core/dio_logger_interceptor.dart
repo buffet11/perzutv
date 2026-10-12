@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:kazutv/services/logging/logger.dart';
+import 'package:perzutv/services/logging/logger.dart';
 
 class DioLoggerInterceptor extends Interceptor {
   static const _startedAtExtraKey = '_kazumiStartedAt';

@@ -1,6 +1,6 @@
 {
-    "name": "kazutv",
-    "short_name": "kazutv",
+    "name": "perzutv",
+    "short_name": "perzutv",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

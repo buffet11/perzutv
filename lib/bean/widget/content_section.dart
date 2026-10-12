@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:kazutv/bean/widget/split_list_row.dart';
-import 'package:kazutv/bean/widget/tonal_card.dart';
+import 'package:perzutv/bean/widget/split_list_row.dart';
+import 'package:perzutv/bean/widget/tonal_card.dart';
 
 class SectionHeader extends StatelessWidget {
   const SectionHeader({super.key, required this.title, this.description});

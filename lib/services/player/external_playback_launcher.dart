@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/services/player/external_player.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/services/player/external_player.dart';
 
 class ExternalPlaybackLauncher {
   final String Function() videoUrl;

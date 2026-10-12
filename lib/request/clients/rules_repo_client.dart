@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:kazutv/request/core/dio_factory.dart';
-import 'package:kazutv/request/core/network_error_mapper.dart';
+import 'package:perzutv/request/core/dio_factory.dart';
+import 'package:perzutv/request/core/network_error_mapper.dart';
 
 class RulesRepoClient {
   RulesRepoClient._();

@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/request/config/api_endpoints.dart';
-import 'package:kazutv/request/clients/rules_repo_client.dart';
-import 'package:kazutv/plugins/plugins.dart';
-import 'package:kazutv/modules/plugin/plugin_http_module.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/request/config/api_endpoints.dart';
+import 'package:perzutv/request/clients/rules_repo_client.dart';
+import 'package:perzutv/plugins/plugins.dart';
+import 'package:perzutv/modules/plugin/plugin_http_module.dart';
 
 class PluginCatalogApi {
   static final RulesRepoClient _client = RulesRepoClient.instance;

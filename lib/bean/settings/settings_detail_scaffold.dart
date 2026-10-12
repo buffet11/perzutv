@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/appbar/sys_app_bar.dart';
+import 'package:perzutv/bean/appbar/sys_app_bar.dart';
 
 class SettingsPaneScope extends InheritedWidget {
   const SettingsPaneScope({

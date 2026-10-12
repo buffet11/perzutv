@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/widget/collect_button.dart';
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
 
 /// A one-shot lease that keeps the player panel visible until released.
 class PlayerPanelHold {
@@ -186,52 +184,3 @@ class _PlayerPanelHoldMenuAnchorState extends State<PlayerPanelHoldMenuAnchor> {
   }
 }
 
-class PlayerPanelHoldCollectButton extends StatefulWidget {
-  const PlayerPanelHoldCollectButton({
-    super.key,
-    required this.acquirePlayerPanelHold,
-    required this.bangumiItem,
-    this.color = Colors.white,
-  });
-
-  final PlayerPanelHold Function() acquirePlayerPanelHold;
-  final BangumiItem bangumiItem;
-  final Color color;
-
-  @override
-  State<PlayerPanelHoldCollectButton> createState() =>
-      _PlayerPanelHoldCollectButtonState();
-}
-
-class _PlayerPanelHoldCollectButtonState
-    extends State<PlayerPanelHoldCollectButton> {
-  PlayerPanelHold? _hold;
-
-  @override
-  void dispose() {
-    _releaseHold();
-    super.dispose();
-  }
-
-  void _acquireHold() {
-    if (_hold?.isReleased == false) {
-      return;
-    }
-    _hold = widget.acquirePlayerPanelHold();
-  }
-
-  void _releaseHold() {
-    _hold?.release();
-    _hold = null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CollectButton(
-      bangumiItem: widget.bangumiItem,
-      color: widget.color,
-      onOpen: _acquireHold,
-      onClose: _releaseHold,
-    );
-  }
-}

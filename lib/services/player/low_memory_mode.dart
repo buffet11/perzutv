@@ -1,4 +1,4 @@
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 enum LowMemoryMode {
   auto('auto'),

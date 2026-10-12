@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
-import 'package:kazutv/request/core/dio_factory.dart';
-import 'package:kazutv/services/movie/movie_source_manager.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
+import 'package:perzutv/request/core/dio_factory.dart';
+import 'package:perzutv/services/movie/movie_source_manager.dart';
 
 /// 新建 / 编辑影视源。
 ///

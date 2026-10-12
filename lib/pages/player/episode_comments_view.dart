@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/card/user_comments_card.dart';
-import 'package:kazutv/bean/widget/error_widget.dart';
-import 'package:kazutv/bean/widget/empty_state_widget.dart';
-import 'package:kazutv/bean/widget/loading_indicator.dart';
-import 'package:kazutv/modules/bangumi/episode_item.dart';
-import 'package:kazutv/modules/comments/comment_item.dart';
+import 'package:perzutv/bean/card/user_comments_card.dart';
+import 'package:perzutv/bean/widget/error_widget.dart';
+import 'package:perzutv/bean/widget/empty_state_widget.dart';
+import 'package:perzutv/bean/widget/loading_indicator.dart';
+import 'package:perzutv/modules/bangumi/episode_item.dart';
+import 'package:perzutv/modules/comments/comment_item.dart';
 
 class EpisodeCommentsView extends StatelessWidget {
   const EpisodeCommentsView({

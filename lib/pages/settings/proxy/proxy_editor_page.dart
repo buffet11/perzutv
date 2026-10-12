@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/network/proxy_utils.dart';
-import 'package:kazutv/services/network/proxy_manager.dart';
-import 'package:kazutv/request/core/dio_factory.dart';
-import 'package:kazutv/request/core/network_config.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/network/proxy_utils.dart';
+import 'package:perzutv/services/network/proxy_manager.dart';
+import 'package:perzutv/request/core/dio_factory.dart';
+import 'package:perzutv/request/core/network_config.dart';
 
 class ProxyEditorPage extends StatefulWidget {
   const ProxyEditorPage({super.key});

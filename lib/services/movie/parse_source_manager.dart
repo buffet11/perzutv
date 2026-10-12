@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:kazutv/modules/movie/parse_source.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/modules/movie/parse_source.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 /// 解析源管理：持久化、增删改、导入。
 ///

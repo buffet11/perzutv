@@ -20,7 +20,7 @@ void ExternalPlayerUtils::OpenWithPlayer(const char* url) {
     GetTempPathW(MAX_PATH, tempPath);
 
     // Generate a random file name
-    std::wstring randomFileName = L"kazutv_stream_";
+    std::wstring randomFileName = L"perzutv_stream_";
     std::random_device rd;
     std::mt19937 eng(rd());
     std::uniform_int_distribution<> distr(10000000, 99999999);

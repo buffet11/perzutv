@@ -1,9 +1,9 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/modules/movie/movie_item.dart';
-import 'package:kazutv/pages/movie/movie_controller.dart';
-import 'package:kazutv/pages/movie/movie_detail_page.dart';
-import 'package:kazutv/pages/movie/movie_page.dart';
-import 'package:kazutv/pages/route_error_page.dart';
+import 'package:perzutv/modules/movie/movie_item.dart';
+import 'package:perzutv/pages/movie/movie_controller.dart';
+import 'package:perzutv/pages/movie/movie_detail_page.dart';
+import 'package:perzutv/pages/movie/movie_page.dart';
+import 'package:perzutv/pages/route_error_page.dart';
 
 /// 影视 Tab，挂在 `/tab` 下 → 完整路径 `/tab/movie`。
 ///

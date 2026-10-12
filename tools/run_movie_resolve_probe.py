@@ -12,7 +12,7 @@
     也没法在本地绕过。
 
 绕过办法：把探针用到的几个**纯文件**复制到一个没有 pubspec.yaml 的临时
-目录，把 `package:kazutv/` 改写成相对路径，在那儿跑。没有 pubspec 就没有
+目录，把 `package:perzutv/` 改写成相对路径，在那儿跑。没有 pubspec 就没有
 native assets 这一步。
 
 被复制的文件都不依赖 Flutter（只 import dart:convert 或不 import 任何东西），
@@ -78,7 +78,7 @@ def main() -> int:
         print(f"[错误] 找不到探针：{PROBE}")
         return 1
 
-    with tempfile.TemporaryDirectory(prefix="kazutv_probe_") as raw:
+    with tempfile.TemporaryDirectory(prefix="perzutv_probe_") as raw:
         tmp = Path(raw)
         for rel in PURE_FILES:
             src = APP_DIR / rel
@@ -91,9 +91,9 @@ def main() -> int:
 
         # 把 package 导入改写成相对路径 —— 脱离 pubspec 后唯一的办法
         text = PROBE.read_text(encoding="utf-8")
-        rewritten = text.replace("package:kazutv/", "../lib/")
+        rewritten = text.replace("package:perzutv/", "../lib/")
         if rewritten == text:
-            print("[警告] 探针里没有 package:kazutv/ 导入，可能已改过写法")
+            print("[警告] 探针里没有 package:perzutv/ 导入，可能已改过写法")
         # 保持 LF：Dart 对行尾不敏感，但别让工具链的 lint 抱怨
         (tmp / "tools").mkdir(parents=True, exist_ok=True)
         (tmp / "tools" / "probe.dart").write_text(rewritten, encoding="utf-8", newline="")

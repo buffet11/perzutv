@@ -1,4 +1,4 @@
-import 'package:kazutv/modules/staff/staff_item.dart';
+import 'package:perzutv/modules/staff/staff_item.dart';
 
 class StaffResponse {
   final List<StaffFullItem> data;

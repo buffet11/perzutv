@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:kazutv/pages/player/controller/player_screenshot_controller.dart';
+import 'package:perzutv/pages/player/controller/player_screenshot_controller.dart';
 
 class PlayerScreenshotControls extends StatelessWidget {
   const PlayerScreenshotControls({

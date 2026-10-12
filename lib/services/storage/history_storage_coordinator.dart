@@ -1,4 +1,4 @@
-import 'package:kazutv/utils/async_serial_queue.dart';
+import 'package:perzutv/utils/async_serial_queue.dart';
 
 /// Serializes mutations to the history Hive box across repositories and sync.
 class HistoryStorageCoordinator {

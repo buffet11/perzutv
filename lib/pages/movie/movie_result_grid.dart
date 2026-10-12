@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/card/network_img_layer.dart';
-import 'package:kazutv/modules/movie/movie_item.dart';
+import 'package:perzutv/bean/card/network_img_layer.dart';
+import 'package:perzutv/modules/movie/movie_item.dart';
 
 /// 搜索结果网格。
 ///

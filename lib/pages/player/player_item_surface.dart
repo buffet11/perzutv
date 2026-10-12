@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:kazutv/pages/player/player_controller.dart';
+import 'package:perzutv/pages/player/player_controller.dart';
 
 class PlayerItemSurface extends StatefulWidget {
   const PlayerItemSurface({

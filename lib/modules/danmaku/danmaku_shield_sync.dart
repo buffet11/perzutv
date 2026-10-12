@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:kazutv/modules/danmaku/danmaku_shield_rule.dart';
+import 'package:perzutv/modules/danmaku/danmaku_shield_rule.dart';
 
 /// A rule keeps its deletion so an offline device cannot resurrect it.
 class DanmakuShieldSyncEntry {

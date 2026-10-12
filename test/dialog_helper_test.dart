@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/navigation.dart';
-import 'package:kazutv/services/player/timed_shutdown_service.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/navigation.dart';
+import 'package:perzutv/services/player/timed_shutdown_service.dart';
 
 Future<void> mountApp(WidgetTester tester) async {
   await tester.pumpWidget(MaterialApp(

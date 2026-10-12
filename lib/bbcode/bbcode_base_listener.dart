@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:antlr4/antlr4.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/bbcode/bbcode_elements.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/bbcode/bbcode_elements.dart';
 
 import 'generated/BBCodeListener.dart';
 import 'generated/BBCodeParser.dart';

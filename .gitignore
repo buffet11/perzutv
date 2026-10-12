@@ -57,7 +57,7 @@ android/build/reports/problems/
 **/ios/Podfile.lock
 **/macos/Podfile.lock
 
-# === Kazutv ===
+# === Perzutv ===
 
 # 构建产物与本地产物目录
 /dist/
@@ -74,7 +74,7 @@ android/key.properties
 
 # 本地构建凭据文件。.vscode/launch.json 与 tools/build_windows.py 都用
 # --dart-define-from-file 读它，里面放弹幕 AppId/AppSecret。
-# 上游 .gitignore 的 .env / .env.* 匹配不到这种命名（以 .kazutv 开头而非 .env），
+# 上游 .gitignore 的 .env / .env.* 匹配不到这种命名（以 .perzutv 开头而非 .env），
 # 所以必须显式排除；用通配是为了把历史命名（.kazumi_*）也一并兜住。
 *_build_defines.env
 

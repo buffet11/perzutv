@@ -1,5 +1,5 @@
-import 'package:kazutv/modules/download/download_module.dart';
-import 'package:kazutv/modules/history/history_module.dart';
+import 'package:perzutv/modules/download/download_module.dart';
+import 'package:perzutv/modules/history/history_module.dart';
 
 final class WatchStats {
   const WatchStats({

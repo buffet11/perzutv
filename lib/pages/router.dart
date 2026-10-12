@@ -23,12 +23,14 @@ class MenuRoute {
 }
 
 const MenuRoute menu = MenuRoute([
-  MenuRouteItem(path: '/popular'),
-  MenuRouteItem(path: '/timeline'),
-  MenuRouteItem(path: '/collect'),
-  // 影视插在「追番」与「我的」之间。改这里 = 改所有 Tab 的下标：
-  // 「我的」由 3 变 4。已确认 _handleSystemBack 只判断 `!= 0`，
-  // 默认启动页设置按**路径**（`/tab/timeline/`）而非下标，所以不受影响。
+  // 「动漫」放最前（也是默认启动页）。
+  // ⚠️ 这里的顺序 = 所有 Tab 的下标，改动必须同步改 menu.dart 里
+  // _bottomMenu / _sideMenu 的 destinations 顺序，否则点击会跳到错误路由。
+  //
+  // 番剧相关的「推荐 / 时间表 / 追番」三个 Tab 已整体移除（本项目只保留
+  // 影视 + 动漫两条采集源链路），所以下标只剩 0/1/2。
+  MenuRouteItem(path: '/anime'),
   MenuRouteItem(path: '/movie'),
   MenuRouteItem(path: '/my'),
 ]);
+

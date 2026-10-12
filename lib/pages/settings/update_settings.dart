@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 class UpdateSettingsPage extends StatefulWidget {
   const UpdateSettingsPage({super.key});

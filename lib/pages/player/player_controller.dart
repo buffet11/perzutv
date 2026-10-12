@@ -4,26 +4,26 @@ import 'dart:typed_data';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/services/player/external_playback_launcher.dart';
-import 'package:kazutv/pages/player/controller/player_danmaku_controller.dart';
-import 'package:kazutv/pages/player/controller/player_debug_controller.dart';
-import 'package:kazutv/pages/player/controller/player_models.dart';
-import 'package:kazutv/pages/player/controller/player_seek_controller.dart';
-import 'package:kazutv/pages/player/controller/player_aspect_ratio.dart';
-import 'package:kazutv/pages/player/controller/player_panel_controller.dart';
-import 'package:kazutv/pages/player/controller/player_playback_controller.dart';
-import 'package:kazutv/pages/player/controller/player_super_resolution.dart';
-import 'package:kazutv/pages/player/controller/player_syncplay_controller.dart';
-import 'package:kazutv/pages/player/controller/player_screenshot_controller.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/shaders/shader_asset_service.dart';
-import 'package:kazutv/pages/download/download_controller.dart';
-import 'package:kazutv/services/player/audio_controller.dart';
-import 'package:kazutv/utils/async_session.dart';
-import 'package:kazutv/utils/device.dart';
+import 'package:perzutv/services/player/external_playback_launcher.dart';
+import 'package:perzutv/pages/player/controller/player_danmaku_controller.dart';
+import 'package:perzutv/pages/player/controller/player_debug_controller.dart';
+import 'package:perzutv/pages/player/controller/player_models.dart';
+import 'package:perzutv/pages/player/controller/player_seek_controller.dart';
+import 'package:perzutv/pages/player/controller/player_aspect_ratio.dart';
+import 'package:perzutv/pages/player/controller/player_panel_controller.dart';
+import 'package:perzutv/pages/player/controller/player_playback_controller.dart';
+import 'package:perzutv/pages/player/controller/player_super_resolution.dart';
+import 'package:perzutv/pages/player/controller/player_syncplay_controller.dart';
+import 'package:perzutv/pages/player/controller/player_screenshot_controller.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/shaders/shader_asset_service.dart';
+import 'package:perzutv/pages/download/download_controller.dart';
+import 'package:perzutv/services/player/audio_controller.dart';
+import 'package:perzutv/utils/async_session.dart';
+import 'package:perzutv/utils/device.dart';
 
-export 'package:kazutv/pages/player/controller/player_models.dart';
+export 'package:perzutv/pages/player/controller/player_models.dart';
 
 class PlayerController implements Disposable {
   PlayerController(

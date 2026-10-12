@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:kazutv/bean/dialog/dialog.dart'
+import 'package:perzutv/bean/dialog/dialog.dart'
     show KazumiDialog, KazumiDialogHandle;
-import 'package:kazutv/bean/widget/loading_indicator.dart';
+import 'package:perzutv/bean/widget/loading_indicator.dart';
 
 mixin KazumiDialogOwner<T extends StatefulWidget> on State<T> {
   late final dialogs = KazumiDialogController(context: () => context)

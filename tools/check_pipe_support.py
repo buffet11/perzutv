@@ -55,7 +55,7 @@ k32.CloseHandle.argtypes = [ctypes.c_void_p]
 
 def probe(server_flags, client_access):
     """按 Dart 的方式建管道并连接，返回 (是否成功, 错误码)。"""
-    name = "\\\\.\\Pipe\\kazutv_check_%s" % uuid.uuid4()
+    name = "\\\\.\\Pipe\\perzutv_check_%s" % uuid.uuid4()
     server = k32.CreateNamedPipeW(
         name, server_flags, 0, 1, 1024, 1024, 0, None
     )

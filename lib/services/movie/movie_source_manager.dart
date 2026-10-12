@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:kazutv/modules/movie/builtin_movie_sources.dart';
-import 'package:kazutv/modules/movie/movie_source.dart';
-import 'package:kazutv/request/apis/apple_cms_api.dart';
-import 'package:kazutv/services/storage/settings_keys.dart';
-import 'package:kazutv/services/storage/storage.dart';
+import 'package:perzutv/modules/movie/builtin_movie_sources.dart';
+import 'package:perzutv/modules/movie/movie_source.dart';
+import 'package:perzutv/request/apis/apple_cms_api.dart';
+import 'package:perzutv/services/storage/settings_keys.dart';
+import 'package:perzutv/services/storage/storage.dart';
 
 /// 探活结果。
 class ProbeResult {
@@ -109,6 +109,18 @@ class MovieSourceManager {
 
   static List<MovieSource> highQualitySources() =>
       all().where((s) => s.highQuality).toList();
+
+  /// 按 key 找源；没有就返回 null（源被删掉后，历史记录仍然要能显示）。
+  static MovieSource? byKey(String key) {
+    if (key.isEmpty) return null;
+    for (final source in all()) {
+      if (source.key == key) return source;
+    }
+    return null;
+  }
+
+  /// 按 key 取源的显示名，找不到就用 key 本身兜底（不返回空串）。
+  static String displayNameOf(String key) => byKey(key)?.name ?? key;
 
   static void _persist() {
     final list = _cache ?? [];

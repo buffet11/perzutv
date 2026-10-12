@@ -1,6 +1,6 @@
 import 'package:hive_ce/hive.dart';
-import 'package:kazutv/modules/bangumi/bangumi_item.dart';
-import 'package:kazutv/modules/collect/collect_type.dart';
+import 'package:perzutv/modules/bangumi/bangumi_item.dart';
+import 'package:perzutv/modules/collect/collect_type.dart';
 
 part 'collect_module.g.dart';
 

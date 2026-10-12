@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-import 'package:kazutv/bean/widget/content_section.dart';
-import 'package:kazutv/bean/widget/empty_state_widget.dart';
-import 'package:kazutv/pages/my/my_controller.dart';
+import 'package:perzutv/bean/widget/content_section.dart';
+import 'package:perzutv/bean/widget/empty_state_widget.dart';
+import 'package:perzutv/pages/my/my_controller.dart';
 
 class DanmakuShieldEditor extends StatefulWidget {
   const DanmakuShieldEditor({

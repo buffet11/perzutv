@@ -23,9 +23,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:kazutv/modules/movie/movie_detail.dart';
-import 'package:kazutv/modules/movie/parse_source.dart';
-import 'package:kazutv/services/movie/movie_stream_parsing.dart';
+import 'package:perzutv/modules/movie/movie_detail.dart';
+import 'package:perzutv/modules/movie/parse_source.dart';
+import 'package:perzutv/services/movie/movie_stream_parsing.dart';
 
 int _passed = 0;
 int _failed = 0;

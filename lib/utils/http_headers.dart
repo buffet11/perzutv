@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:kazutv/utils/constants.dart';
+import 'package:perzutv/utils/constants.dart';
 
 final _random = Random();
 

@@ -1,17 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/bean/card/palette_card.dart';
-import 'package:kazutv/utils/constants.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/theme_provider.dart';
-import 'package:kazutv/bean/settings/color_type.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
+import 'package:perzutv/bean/card/palette_card.dart';
+import 'package:perzutv/utils/constants.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/theme_provider.dart';
+import 'package:perzutv/bean/settings/color_type.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:kazutv/utils/device.dart';
-import 'package:kazutv/utils/theme.dart';
+import 'package:perzutv/utils/device.dart';
+import 'package:perzutv/utils/theme.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});

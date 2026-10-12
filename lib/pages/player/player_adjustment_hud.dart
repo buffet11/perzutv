@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/utils/format.dart';
+import 'package:perzutv/utils/format.dart';
 
 enum PlayerAdjustmentHudType {
   brightness,

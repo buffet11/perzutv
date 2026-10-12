@@ -1,53 +1,39 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/pages/my/my_controller.dart';
-import 'package:kazutv/services/sync/bangumi_sync_service.dart';
-import 'package:kazutv/services/sync/danmaku_shield_sync_service.dart';
-import 'package:kazutv/services/sync/webdav.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/plugins/plugins_controller.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/pages/my/my_controller.dart';
+import 'package:perzutv/services/storage/storage.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/pages/collect/collect_controller.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/shaders/shader_asset_service.dart';
-import 'package:kazutv/pages/download/download_controller.dart';
-import 'package:kazutv/pages/plugin_editor/plugin_update_actions.dart';
-import 'package:kazutv/services/download/background_download_service.dart';
-import 'package:kazutv/services/platform/windows_shortcut.dart';
-import 'package:kazutv/services/platform/platform_environment_service.dart';
-import 'package:kazutv/services/update/startup_update_check.dart';
-import 'package:kazutv/navigation.dart';
+import 'package:perzutv/services/shaders/shader_asset_service.dart';
+import 'package:perzutv/services/platform/windows_shortcut.dart';
+import 'package:perzutv/services/platform/platform_environment_service.dart';
+import 'package:perzutv/services/update/startup_update_check.dart';
+import 'package:perzutv/navigation.dart';
+import 'package:perzutv/utils/startup_page.dart';
 
+/// 启动页：做完全部初始化后跳到默认启动页。
+///
+/// ⚠️ 番剧功能已整体移除，原先的「规则插件初始化 / 首次启动引导安装规则 /
+/// 追番数据迁移 / WebDAV 番剧同步 / Bangumi 同步 / 离线下载初始化」都已删掉。
+/// 现在这里只保留与影视 + 动漫模块真正相关的启动动作：
+/// 超分着色器落盘、弹幕屏蔽词装载、桌面快捷方式询问、自动更新检查、跳默认页。
 class InitPage extends StatefulWidget {
   const InitPage({
     super.key,
-    required this.pluginsController,
-    required this.collectController,
     required this.shaderAssetService,
     required this.myController,
-    required this.downloadController,
-    required this.danmakuShieldSync,
   });
 
-  final PluginsController pluginsController;
-  final CollectController collectController;
   final ShaderAssetService shaderAssetService;
   final MyController myController;
-  final DownloadController downloadController;
-  final DanmakuShieldSyncService danmakuShieldSync;
 
   @override
   State<InitPage> createState() => _InitPageState();
 }
 
 class _InitPageState extends State<InitPage> {
-  PluginsController get pluginsController => widget.pluginsController;
-  CollectController get collectController => widget.collectController;
-  ShaderAssetService get shaderAssetService => widget.shaderAssetService;
   MyController get myController => widget.myController;
-  DownloadController get downloadController => widget.downloadController;
 
   @override
   void initState() {
@@ -56,35 +42,18 @@ class _InitPageState extends State<InitPage> {
   }
 
   Future<void> _initializeApp() async {
-    widget.danmakuShieldSync.start();
-    _migrateStorage();
     _loadShaders();
     unawaited(myController.loadShieldList());
-    _webDavInit();
-    _bangumiInit();
-    try {
-      await downloadController.init();
-      _setupBackgroundDownloadNavigation();
-    } catch (e) {
-      KazumiLogger().e('InitPage: downloadController.init() failed', error: e);
-    }
 
     await _checkRunningOnX11();
     await _showShortcutDialog();
-    await _pluginInit();
 
     if (!mounted) {
       return;
     }
-    // First launch: no installed rules yet, hand over to the onboarding flow.
-    // OnboardingPage takes care of navigating to the default page and
-    // triggering the auto update check afterwards.
-    if (pluginsController.pluginList.isEmpty) {
+    // 首次启动必须先过引导页（使用约定 / 免责声明）。
+    if (!GStorage.getSetting(SettingsKeys.onboardingCompleted)) {
       context.navigate('/onboarding');
-      return;
-    }
-
-    if (!mounted) {
       return;
     }
     final updateController = myController;
@@ -97,123 +66,18 @@ class _InitPageState extends State<InitPage> {
     _startDefaultPage();
   }
 
-  void _setupBackgroundDownloadNavigation() {
-    final backgroundService = BackgroundDownloadService();
-
-    backgroundService.onNavigateToDownloadRequested = () {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        try {
-          final navigationContext = rootNavigatorKey.currentContext;
-          if (navigationContext == null || !navigationContext.mounted) return;
-          final path = navigationContext.routeState(listen: false).uri.path;
-          if (path.contains('/download')) return;
-          navigationContext.pushNamed('/settings/download/');
-        } catch (e) {
-          KazumiLogger()
-              .w('InitPage: failed to navigate to download page', error: e);
-        }
-      });
-    };
-
-    backgroundService.onNotificationPermissionRequired = () async {
-      final result = await KazumiDialog.show<bool>(
-        clickMaskDismiss: false,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('需要通知权限'),
-            content: const Text(
-              '开启通知权限后，可以在后台下载时显示进度，并防止系统终止下载任务。\n\n'
-              '如果拒绝，下载功能仍可使用，但在后台时可能被系统中断。',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => KazumiDialog.dismiss(popWith: false),
-                child: Text(
-                  '稍后再说',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.outline),
-                ),
-              ),
-              TextButton(
-                onPressed: () => KazumiDialog.dismiss(popWith: true),
-                child: const Text('允许'),
-              ),
-            ],
-          );
-        },
-      );
-      return result ?? false;
-    };
-  }
-
   void _startDefaultPage() {
-    final defaultStartupPage =
-        GStorage.getSetting(SettingsKeys.defaultStartupPage);
+    // 过滤掉已失效的启动页（番剧 Tab 已删除，旧设置可能残留）
+    final defaultStartupPage = StartupPage.resolve(
+        GStorage.getSetting(SettingsKeys.defaultStartupPage));
     if (!mounted) {
       return;
     }
     context.navigate(defaultStartupPage);
   }
 
-  // migrate collect from old version (favorites)
-  Future<void> _migrateStorage() async {
-    await collectController.migrateCollect();
-  }
-
   Future<void> _loadShaders() async {
-    await shaderAssetService.copyShadersToExternalDirectory();
-  }
-
-  Future<void> _webDavInit() async {
-    bool webDavEnable = await GStorage.getSetting(SettingsKeys.webDavEnable);
-    bool webDavEnableHistory =
-        await GStorage.getSetting(SettingsKeys.webDavEnableHistory);
-    if (webDavEnable) {
-      var webDav = WebDav();
-      KazumiLogger().i('WebDav: Starting WebDav initialization');
-      try {
-        await webDav.init();
-        await widget.danmakuShieldSync.syncIfEnabled();
-        if (webDavEnableHistory) {
-          try {
-            await webDav.syncHistory();
-            KazumiLogger().i('WebDav: Completed syncing watch history');
-          } catch (e, stackTrace) {
-            KazumiLogger().w(
-              'WebDav: automatic watch history sync failed',
-              error: e,
-              stackTrace: stackTrace,
-            );
-          }
-        }
-      } catch (e, stackTrace) {
-        KazumiLogger().w(
-          'WebDav: automatic initialization failed',
-          error: e,
-          stackTrace: stackTrace,
-        );
-      }
-    }
-  }
-
-  Future<void> _bangumiInit() async {
-    final bangumiEnable = GStorage.getSetting(SettingsKeys.bangumiSyncEnable);
-    if (bangumiEnable) {
-      final bangumi = BangumiSyncService();
-      KazumiLogger().i('Bangumi: Starting Bangumi initialization');
-      try {
-        await bangumi.ping();
-      } catch (e) {
-        KazumiLogger().w(
-          'Bangumi: initialization failed; keeping sync enabled for retry',
-          error: e,
-        );
-        KazumiDialog.showToast(
-          message:
-              'Bangumi 暂未连接，同步设置已保留：${BangumiSyncService.describeError(e)}',
-        );
-      }
-    }
+    await widget.shaderAssetService.copyShadersToExternalDirectory();
   }
 
   Future<void> _checkRunningOnX11() async {
@@ -230,7 +94,7 @@ class _InitPageState extends State<InitPage> {
             child: AlertDialog(
               title: const Text('X11环境检测'),
               content: const Text(
-                  '检测到您当前运行在X11环境下，Kazutv在X11环境下可能出现性能问题或界面异常，建议切换到Wayland以获得更好的体验。您是否希望在X11下继续使用Kazutv？'),
+                  '检测到您当前运行在X11环境下，Perzutv在X11环境下可能出现性能问题或界面异常，建议切换到Wayland以获得更好的体验。您是否希望在X11下继续使用Perzutv？'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -266,7 +130,7 @@ class _InitPageState extends State<InitPage> {
       clickMaskDismiss: false,
       builder: (context) => AlertDialog(
         title: const Text('创建桌面快捷方式'),
-        content: const Text('是否在桌面创建 Kazutv 的快捷方式？'),
+        content: const Text('是否在桌面创建 Perzutv 的快捷方式？'),
         actions: [
           TextButton(
             onPressed: () => KazumiDialog.dismiss(popWith: false),
@@ -285,44 +149,6 @@ class _InitPageState extends State<InitPage> {
     if (create ?? false) {
       final success = await WindowsShortcut.createDesktopShortcut();
       KazumiDialog.showToast(message: success ? '桌面快捷方式已创建' : '桌面快捷方式创建失败');
-    }
-  }
-
-  Future<void> _pluginInit() async {
-    try {
-      await pluginsController.init();
-      unawaited(_pluginUpdate());
-    } catch (error, stackTrace) {
-      KazumiLogger().e(
-        'Plugin: failed to initialize rules',
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
-  }
-
-  Future<void> _pluginUpdate() async {
-    final checkOnStartup =
-        GStorage.getSetting(SettingsKeys.checkPluginUpdateOnStartup);
-    late final int count;
-    try {
-      count = await pluginsController.checkPluginUpdatesOnStartup(
-        enabled: checkOnStartup,
-      );
-    } catch (_) {
-      return;
-    }
-    if (count != 0) {
-      KazumiDialog.showToast(
-        message: '检测到 $count 条规则可以更新',
-        showActionButton: true,
-        actionLabel: '全部更新',
-        onActionPressed: () => updateAllPluginsWithFeedback(
-          pluginsController,
-          ensureCatalog: false,
-        ),
-        duration: const Duration(seconds: 5),
-      );
     }
   }
 

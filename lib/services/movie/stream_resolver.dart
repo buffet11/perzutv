@@ -1,8 +1,8 @@
-import 'package:kazutv/modules/movie/parse_source.dart';
-import 'package:kazutv/services/logging/logger.dart';
-import 'package:kazutv/services/movie/parse_source_client.dart';
-import 'package:kazutv/services/movie/parse_source_manager.dart';
-import 'package:kazutv/services/movie/web_stream_scraper.dart';
+import 'package:perzutv/modules/movie/parse_source.dart';
+import 'package:perzutv/services/logging/logger.dart';
+import 'package:perzutv/services/movie/parse_source_client.dart';
+import 'package:perzutv/services/movie/parse_source_manager.dart';
+import 'package:perzutv/services/movie/web_stream_scraper.dart';
 
 /// 解析结果。
 class ResolvedStream {

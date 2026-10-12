@@ -1,8 +1,12 @@
-/// 影视播放进度。
+import 'package:perzutv/modules/movie/movie_origin.dart';
+
+/// 影视 / 动漫播放进度。
 ///
 /// **刻意与番剧历史分开存。** 番剧那套 `History` 是绑在 `BangumiItem` 上、
 /// 还挂着 WebDAV 同步的；影视没有 Bangumi id，混进去会污染番剧的「看过」列表
 /// 和同步数据，还会让「番剧历史」里冒出一堆 id=0 的记录。
+///
+/// 动漫模块复用同一份记录（同一套采集源链路），靠 [origin] 区分来源模块。
 class MoviePlayProgress {
   /// 来源源 key，与 [vodId] 一起定位一部片
   final String sourceKey;
@@ -15,6 +19,9 @@ class MoviePlayProgress {
 
   /// 线路名（源站的 `vod_play_from`）
   final String routeName;
+
+  /// 在哪看过的：[MovieOrigin.movie] 或 [MovieOrigin.anime]。
+  final String origin;
 
   /// 在这条线路**可播集**列表里的下标（0 基）。
   ///
@@ -37,6 +44,7 @@ class MoviePlayProgress {
     required this.name,
     this.coverUrl = '',
     this.routeName = '',
+    this.origin = MovieOrigin.movie,
     this.episodeIndex = 0,
     this.episodeTitle = '',
     this.positionSeconds = 0,
@@ -87,6 +95,7 @@ class MoviePlayProgress {
     String? name,
     String? coverUrl,
     String? routeName,
+    String? origin,
     int? episodeIndex,
     String? episodeTitle,
     int? positionSeconds,
@@ -99,6 +108,7 @@ class MoviePlayProgress {
       name: name ?? this.name,
       coverUrl: coverUrl ?? this.coverUrl,
       routeName: routeName ?? this.routeName,
+      origin: origin ?? this.origin,
       episodeIndex: episodeIndex ?? this.episodeIndex,
       episodeTitle: episodeTitle ?? this.episodeTitle,
       positionSeconds: positionSeconds ?? this.positionSeconds,
@@ -113,6 +123,7 @@ class MoviePlayProgress {
         'name': name,
         'coverUrl': coverUrl,
         'routeName': routeName,
+        'origin': origin,
         'episodeIndex': episodeIndex,
         'episodeTitle': episodeTitle,
         'positionSeconds': positionSeconds,
@@ -129,6 +140,8 @@ class MoviePlayProgress {
       name: asStr(json['name']),
       coverUrl: asStr(json['coverUrl']),
       routeName: asStr(json['routeName']),
+      // 老记录没有这个字段 → 按影视处理（它们本来就是从影视 Tab 看的）
+      origin: MovieOrigin.resolve(json['origin']),
       episodeIndex: asInt(json['episodeIndex']),
       episodeTitle: asStr(json['episodeTitle']),
       positionSeconds: asInt(json['positionSeconds']),

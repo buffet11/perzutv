@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/settings/settings_list.dart';
-import 'package:kazutv/modules/collect/collect_layout.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/device.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/settings/settings_list.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/device.dart';
+import 'package:perzutv/utils/startup_page.dart';
 
 class InterfaceSettingsPage extends StatefulWidget {
   const InterfaceSettingsPage({super.key});
@@ -16,51 +15,30 @@ class InterfaceSettingsPage extends StatefulWidget {
 class _InterfaceSettingsPageState extends State<InterfaceSettingsPage> {
   late bool showRating;
   late String defaultPage;
-  late CollectLayout _defaultCollectLayout;
-  bool _savingCollectLayout = false;
-  final _collectLayoutMenuController = MenuController();
   final _exitBehaviorMenuController = MenuController();
-  static const _exitBehaviorTitles = ['退出 Kazutv', '最小化至托盘', '每次都询问'];
+  static const _exitBehaviorTitles = ['退出 Perzutv', '最小化至托盘', '每次都询问'];
   int _exitBehavior = GStorage.getSetting(SettingsKeys.exitBehavior)
       .clamp(0, _exitBehaviorTitles.length - 1);
   final MenuController defaultPageMenuController = MenuController();
 
-  static const Map<String, String> defaultPageMap = {
-    '/tab/popular/': '推荐',
-    '/tab/timeline/': '时间表',
-    '/tab/collect/': '追番',
-    '/tab/movie/': '影视',
-    '/tab/my/': '我的',
-  };
+  /// 可选启动页（动漫 / 影视 / 我的）统一由 [StartupPage] 维护，
+  /// 避免"这里有 4 项、那边白名单只有 3 项"的漂移。
+  static const Map<String, String> defaultPageMap = StartupPage.labels;
 
   @override
   void initState() {
     super.initState();
     showRating = GStorage.getSetting(SettingsKeys.showRating);
-    defaultPage = GStorage.getSetting(SettingsKeys.defaultStartupPage);
-    _defaultCollectLayout = CollectLayout.fromValue(
-      GStorage.getSetting(SettingsKeys.defaultCollectLayout),
-    );
+    defaultPage = StartupPage.resolve(
+        GStorage.getSetting(SettingsKeys.defaultStartupPage));
   }
 
   void updateDefaultPage(String page) {
-    GStorage.putSetting(SettingsKeys.defaultStartupPage, page);
+    final resolved = StartupPage.resolve(page);
+    GStorage.putSetting(SettingsKeys.defaultStartupPage, resolved);
     setState(() {
-      defaultPage = page;
+      defaultPage = resolved;
     });
-  }
-
-  Future<void> _updateDefaultCollectLayout(CollectLayout layout) async {
-    if (_savingCollectLayout || layout == _defaultCollectLayout) return;
-    setState(() => _savingCollectLayout = true);
-    try {
-      await GStorage.putSetting(SettingsKeys.defaultCollectLayout, layout.name);
-      if (mounted) setState(() => _defaultCollectLayout = layout);
-    } catch (_) {
-      if (mounted) KazumiDialog.showToast(message: '追番默认布局保存失败，请重试');
-    } finally {
-      if (mounted) setState(() => _savingCollectLayout = false);
-    }
   }
 
   Widget _menuItem({
@@ -107,7 +85,7 @@ class _InterfaceSettingsPageState extends State<InterfaceSettingsPage> {
                 controller: defaultPageMenuController,
                 builder: (_, __, ___) {
                   return Text(
-                    defaultPageMap[defaultPage] ?? '推荐',
+                    defaultPageMap[defaultPage] ?? StartupPage.labels[StartupPage.fallback]!,
                   );
                 },
                 menuChildren: [
@@ -122,30 +100,6 @@ class _InterfaceSettingsPageState extends State<InterfaceSettingsPage> {
             ),
           ]),
           SettingsSection(title: Text('展示信息'), tiles: [
-            SettingsTile(
-              leading: Icons.view_agenda_rounded,
-              title: const Text('追番默认布局'),
-              description: const Text('下次打开追番页时使用，页面内切换不会改变此设置'),
-              enabled: !_savingCollectLayout,
-              onPressed: (_) => _collectLayoutMenuController.isOpen
-                  ? _collectLayoutMenuController.close()
-                  : _collectLayoutMenuController.open(),
-              value: MenuAnchor(
-                controller: _collectLayoutMenuController,
-                consumeOutsideTap: true,
-                menuChildren: [
-                  for (final layout in CollectLayout.values)
-                    _menuItem(
-                      label: layout.label,
-                      selected: layout == _defaultCollectLayout,
-                      onPressed: _savingCollectLayout
-                          ? null
-                          : () => _updateDefaultCollectLayout(layout),
-                    ),
-                ],
-                builder: (_, __, ___) => Text(_defaultCollectLayout.label),
-              ),
-            ),
             SettingsTile.switchTile(
               leading: Icons.star_rounded,
               onToggle: (value) async {
@@ -154,7 +108,7 @@ class _InterfaceSettingsPageState extends State<InterfaceSettingsPage> {
                 setState(() {});
               },
               title: Text('显示评分'),
-              description: Text('关闭后隐藏概览和番剧列表中的评分信息'),
+              description: Text('关闭后隐藏影视 / 动漫列表中的评分信息'),
               initialValue: showRating,
             ),
           ]),

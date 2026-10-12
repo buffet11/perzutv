@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/widget/error_widget.dart';
-import 'package:kazutv/bean/widget/state_presentation.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/widget/error_widget.dart';
+import 'package:perzutv/bean/widget/state_presentation.dart';
 
 class RouteErrorPage extends StatelessWidget {
   const RouteErrorPage({
@@ -15,13 +15,13 @@ class RouteErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsDetailScaffold(
-      title: const Text('Kazutv'),
+      title: const Text('Perzutv'),
       body: GeneralErrorWidget(
         title: '无法打开页面',
         errMsg: message,
         actions: [
           StateActionButton(
-            onPressed: () => context.navigate('/tab/popular/'),
+            onPressed: () => context.navigate('/tab/anime/'),
             icon: Icons.home_outlined,
             text: '返回首页',
           ),

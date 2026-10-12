@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:kazutv/bean/dialog/dialog_helper.dart';
-import 'package:kazutv/bean/settings/settings_detail_scaffold.dart';
-import 'package:kazutv/bean/widget/content_section.dart';
-import 'package:kazutv/services/storage/storage.dart';
-import 'package:kazutv/utils/constants.dart';
+import 'package:perzutv/bean/dialog/dialog_helper.dart';
+import 'package:perzutv/bean/settings/settings_detail_scaffold.dart';
+import 'package:perzutv/bean/widget/content_section.dart';
+import 'package:perzutv/services/storage/storage.dart';
+import 'package:perzutv/utils/constants.dart';
 
 class _ShortcutGroup {
   const _ShortcutGroup(this.title, this.functions);

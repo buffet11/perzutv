@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kazutv/services/player/syncplay_endpoint.dart';
-import 'package:kazutv/services/storage/settings_keys.dart';
+import 'package:perzutv/services/player/syncplay_endpoint.dart';
+import 'package:perzutv/services/storage/settings_keys.dart';
 
 void main() {
   test('uses an official server as the default endpoint', () {

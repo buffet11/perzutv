@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Kazutv (debug, Skia)",
+      "name": "Perzutv (debug, Skia)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
@@ -12,18 +12,18 @@
       ]
     },
     {
-      "name": "Kazutv (debug, Skia, local defines)",
+      "name": "Perzutv (debug, Skia, local defines)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "debug",
       "toolArgs": [
         "--no-enable-impeller",
-        "--dart-define-from-file=.kazutv_build_defines.env"
+        "--dart-define-from-file=.perzutv_build_defines.env"
       ]
     },
     {
-      "name": "Kazutv (debug, Impeller)",
+      "name": "Perzutv (debug, Impeller)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
@@ -33,14 +33,14 @@
       ]
     },
     {
-      "name": "Kazutv (debug, Impeller, local defines)",
+      "name": "Perzutv (debug, Impeller, local defines)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "debug",
       "toolArgs": [
         "--enable-impeller",
-        "--dart-define-from-file=.kazutv_build_defines.env"
+        "--dart-define-from-file=.perzutv_build_defines.env"
       ]
     }
   ]
